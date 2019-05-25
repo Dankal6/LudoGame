@@ -519,7 +519,7 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 			draw_square(x, y, 255, h);
 		}
 	}
-	//rysowanie baz graczy
+	//rysowanie mety graczy
 	int it, j;
 	for (it = 0; it < 4; it++)
 	{
@@ -557,6 +557,51 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 	{
 		draw_4_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]], board->pawn_ptr[x][y][temp[3]]);
 	}
+	//rysowanie baz
+
+}
+
+void return_to_base(_pawn *pawn, _board *board)
+{
+	pawn->in_base = 1;
+	pawn->pos_on_road = 0;
+	if (strcmp(pawn->player, "green") == 0)
+	{
+		pawn->x = board->base_coords[0][pawn->id][0];
+		pawn->y = board->base_coords[0][pawn->id][1];
+	}
+	else if (strcmp(pawn->player, "yellow") == 0)
+	{
+		pawn->x = board->base_coords[1][pawn->id][0];
+		pawn->y = board->base_coords[1][pawn->id][1];
+	}
+	else if (strcmp(pawn->player, "blue") == 0)
+	{
+		pawn->x = board->base_coords[2][pawn->id][0];
+		pawn->y = board->base_coords[2][pawn->id][1];
+	}
+	else if (strcmp(pawn->player, "red") == 0)
+	{
+		pawn->x = board->base_coords[3][pawn->id][0];
+		pawn->y = board->base_coords[3][pawn->id][1];
+	}
+	board->pawn_ptr[pawn->x][pawn->y][pawn->id] = pawn;
+}
+
+void beat_enemy_pawns(_pawn *pawn, _board *board)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (board->pawn_ptr[pawn->x][pawn->y][i] != NULL)
+		{
+			if (board->pawn_ptr[pawn->x][pawn->y][i]->color != pawn->color)	//porownuje po kolorach, bo czemu nie
+			{
+				return_to_base(board->pawn_ptr[pawn->x][pawn->y][i], board);	//RETURN COS NIE DZIALA
+				board->pawn_ptr[pawn->x][pawn->y][i] = NULL;
+				board->how_many_pawns[pawn->x][pawn->y]--;
+			}
+		}
+	}
 }
 
 void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
@@ -564,12 +609,18 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	int x = board->exit_coords[player][0];
 	int y = board->exit_coords[player][1];
 	int color = board->exit_coords[player][2];
-	//int i = board->how_many_pawns[x][y];
 	int i = which_is_null(x, y, board);
-	board->pawn_ptr[x][y][i] = pawn;		////tutaj problem !!!!!!!!!!!!!
-
+	board->pawn_ptr[x][y][i] = pawn;
+	i = board->how_many_pawns[x][y];
 	draw_square(pawn->x, pawn->y, color, h);	//usuwam pionka z bazy
-			//rysuje go na polu wyjsciowym w zaleznosci od stanu tego pola (ilosci pionkow)
+	pawn->x = x;
+	pawn->y = y;
+	if (i > 0)
+	{
+		beat_enemy_pawns(pawn, board);
+	}
+	i = board->how_many_pawns[x][y];
+	//rysuje go na polu wyjsciowym w zaleznosci od stanu tego pola (ilosci pionkow)
 	int *temp = which_is_not_null(x, y, board);
 	if (i == 0)
 	{
@@ -639,12 +690,18 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _ro
 			board->pawn_ptr[road[i - 1].x][road[i - 1].y][return_index_of_pawn(road[i - 1].x, road[i - 1].y, pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
 			board->how_many_pawns[road[i - 1].x][road[i - 1].y]--;	//dekrementacja ilosci piokow ze starego pola
 			board->how_many_pawns[x][y]++;	//inkrementacja ilosci pionkow na nowym polu
+			pawn->pos_on_road++;
+			pawn->x = x;
+			pawn->y = y;
+			Sleep(20);
+			if (i == (temp + dice - 1))
+			{
+				beat_enemy_pawns(pawn, board);
+			}
 			//rysowanie nowego pola
 			draw_field(road[i].x, road[i].y, board, h, i + 1);
 			//odtwarzanie starego pola
 			draw_field(road[i - 1].x, road[i - 1].y, board, h, i);
-			pawn->pos_on_road++;
-			Sleep(20);
 		}
 	}
 	return;
@@ -1009,19 +1066,22 @@ int main()
 		gotoxy(0, 22, h);
 
 		srand(time(0));
-		int dice = rand() % 6 + 1;// = throw_dice();
+		int dice = throw_dice();
+
+		//printf("Dice: ");
+		//scanf("%i", &dice);
+
 		printf("\nDice: %i", dice);
 
-		/*scanf("%i", &dice);
-		printf("Player: ");
-		scanf("%i", &i);*/
+		//printf("Player: ");
+		//scanf("%i", &i);
 		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
 
 		if (dice < 44)
 		{
 			pawn_nr = rand() % 4 + 1;
-			//printf("\nChoose pawn: %i",pawn_nr);
 
+			//printf("\nChoose pawn: ");
 			//scanf("%i", &pawn_nr);
 			pawn = find_pawn_in_array(players[i].name, pawn_nr, pawns);
 			move_pawn(pawn, dice, board, h, pawns, roads[i]);
