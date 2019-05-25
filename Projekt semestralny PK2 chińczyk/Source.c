@@ -2,6 +2,9 @@
 #include <string.h>
 #include <Windows.h>
 
+#include <stdlib.h>
+#include <time.h>
+
 //34,32 - ZIELONY ; 102,96 ZOLTY ; 68,64 CZERWONY ; 17,16 NIEBIESKI
 
 typedef struct {
@@ -22,7 +25,7 @@ typedef struct {
 	_pawn *pawn_ptr[11][11][4];		//przechowuje wskazniki na pionki znajdujace sie na danym polu
 	int exit_coords[4][3];		//koordy wyjsc z baz + kolor pola
 	int base_coords[4][4][2];		//koordy baz (gracz, 1 z 4 pol, koordy)
-
+	int meta_coords[4][4][2];		//koordy mety dla kazdego z graczy (gracz[1-4], 1 z pol, wspolrzedne) jw
 }_board;
 
 //warto rozwazyc przerobienie na liste dwukierunkowa
@@ -234,11 +237,15 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 		{
 			draw_square(j, i + 1, 34, h);	//META ZIELONEGO
 			sprintf((board->coords)[j][i + 1], "gend");
+			board->meta_coords[0][j - 1][0] = j;
+			board->meta_coords[0][j - 1][1] = i + 1;
 		}
 		else if (j < 10 && j>5)
 		{
 			draw_square(j, i + 1, 17, h);	//META NIEBIESKIEGO
 			sprintf((board->coords)[j][i + 1], "bend");
+			board->meta_coords[2][j - 6][0] = j;
+			board->meta_coords[2][j - 6][1] = i + 1;
 		}
 	}
 
@@ -281,6 +288,8 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 				{
 					draw_square(j, i, 102, h);	//META ZOLTEGO
 					sprintf((board->coords)[j][i], "yend");
+					board->meta_coords[1][i - 1][0] = j;
+					board->meta_coords[1][i - 1][1] = i;
 					continue;
 				}
 			}
@@ -290,6 +299,8 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 				{
 					draw_square(j, i, 68, h);	//META CZERWONEGO
 					sprintf((board->coords)[j][i], "rend");
+					board->meta_coords[3][i - 6][0] = j;
+					board->meta_coords[3][i - 6][1] = i;
 					continue;
 				}
 			}
@@ -466,6 +477,17 @@ int *which_is_not_null(int x, int y, _board *board)
 	return tab;
 }
 
+int which_is_null(int x, int y, _board *board)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (board->pawn_ptr[x][y][i] == NULL)
+		{
+			return i;
+		}
+	}
+}
+
 void draw_field(int x, int y, _board *board, HANDLE h, int i)
 {
 	//rysowanie wyjsc graczy
@@ -497,6 +519,25 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 			draw_square(x, y, 255, h);
 		}
 	}
+	//rysowanie baz graczy
+	int it, j;
+	for (it = 0; it < 4; it++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			if (x == board->meta_coords[it][j][0] && y == board->meta_coords[it][j][1])
+			{
+				if (it == 0)
+					draw_square(x, y, 34, h);
+				else if (it == 1)
+					draw_square(x, y, 102, h);
+				else if (it == 2)
+					draw_square(x, y, 17, h);
+				else if (it == 3)
+					draw_square(x, y, 68, h);
+			}
+		}
+	}
 	//rysowanie pionkow
 	int pawns = board->how_many_pawns[x][y];
 	int *temp = which_is_not_null(x, y, board);
@@ -523,8 +564,9 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	int x = board->exit_coords[player][0];
 	int y = board->exit_coords[player][1];
 	int color = board->exit_coords[player][2];
-	int i = board->how_many_pawns[x][y];
-	board->pawn_ptr[x][y][i] = pawn;
+	//int i = board->how_many_pawns[x][y];
+	int i = which_is_null(x, y, board);
+	board->pawn_ptr[x][y][i] = pawn;		////tutaj problem !!!!!!!!!!!!!
 
 	draw_square(pawn->x, pawn->y, color, h);	//usuwam pionka z bazy
 			//rysuje go na polu wyjsciowym w zaleznosci od stanu tego pola (ilosci pionkow)
@@ -581,12 +623,19 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _ro
 	else
 	{
 		int temp = pawn->pos_on_road;		//zaczyna sie od 1, takze pod i kryje sie nastepne pole
+		if (temp + dice > 44)
+		{
+			//Printf("You can't move that pawn!");
+			//Sleep(1000);
+			return;
+		}
 		for (int i = temp; i < (temp + dice); i++)
 		{
 			int x = road[i].x;
 			int y = road[i].y;
+			int empty = which_is_null(x, y, board);
 
-			board->pawn_ptr[x][y][board->how_many_pawns[x][y]] = pawn;	//dodaje wskazik na nowego pionka dla pola dalej
+			board->pawn_ptr[x][y][empty] = pawn;	//dodaje wskazik na nowego pionka dla pola dalej
 			board->pawn_ptr[road[i - 1].x][road[i - 1].y][return_index_of_pawn(road[i - 1].x, road[i - 1].y, pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
 			board->how_many_pawns[road[i - 1].x][road[i - 1].y]--;	//dekrementacja ilosci piokow ze starego pola
 			board->how_many_pawns[x][y]++;	//inkrementacja ilosci pionkow na nowym polu
@@ -829,12 +878,13 @@ void prepare_blue_road(_road road[4][44])
 		road[2][j].x = i + 7;
 		j++;
 	}
-	for (i = 10; i <= 6; i--)
+	for (i = 10; i > 5; i--)
 	{
 		road[2][j].y = 5;
 		road[2][j].x = i;
 		j++;
 	}
+
 
 }
 
@@ -904,6 +954,7 @@ void prepare_red_road(_road road[4][44])
 		road[3][j].x = 5;
 		j++;
 	}
+
 }
 
 //wypelniam NULLami
@@ -957,15 +1008,21 @@ int main()
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		gotoxy(0, 22, h);
 
-		int dice; // = throw_dice();
-		printf("\nDice: ");
-		scanf("%i", &dice);
+		srand(time(0));
+		int dice = rand() % 6 + 1;// = throw_dice();
+		printf("\nDice: %i", dice);
+
+		/*scanf("%i", &dice);
+		printf("Player: ");
+		scanf("%i", &i);*/
 		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
 
 		if (dice < 44)
 		{
-			printf("\nChoose pawn: ");
-			scanf("%i", &pawn_nr);
+			pawn_nr = rand() % 4 + 1;
+			//printf("\nChoose pawn: %i",pawn_nr);
+
+			//scanf("%i", &pawn_nr);
 			pawn = find_pawn_in_array(players[i].name, pawn_nr, pawns);
 			move_pawn(pawn, dice, board, h, pawns, roads[i]);
 		}
@@ -977,7 +1034,7 @@ int main()
 		{
 			i++;
 		}
-
+		Sleep(100);
 		clear_text(h);
 	}
 
