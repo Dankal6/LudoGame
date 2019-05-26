@@ -337,6 +337,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					board->pawn_ptr[j][i][green_pawn - 1] = &pawns[green_pawn - 1];
 					board->base_coords[0][green_pawn - 1][0] = j; board->base_coords[0][green_pawn - 1][1] = i;
+					board->how_many_pawns[j][i] = 1;
 
 
 					draw_pawn(j, i, 32, h, &pawns[green_pawn - 1]);
@@ -359,8 +360,9 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[yellow_pawn + 3].y = i;
 					pawns[yellow_pawn + 3].in_base = 1;
 
-					board->pawn_ptr[j][i][yellow_pawn - 1] = &pawns[yellow_pawn - 1];
+					board->pawn_ptr[j][i][yellow_pawn - 1] = &pawns[4 + yellow_pawn - 1];
 					board->base_coords[1][yellow_pawn - 1][0] = j; board->base_coords[1][yellow_pawn - 1][1] = i;
+					board->how_many_pawns[j][i] = 1;
 
 					draw_pawn(j, i, 96, h, &pawns[yellow_pawn + 3]);
 
@@ -384,8 +386,9 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[red_pawn + 11].y = i;
 					pawns[red_pawn + 11].in_base = 1;
 
-					board->pawn_ptr[j][i][red_pawn - 1] = &pawns[red_pawn - 1];
+					board->pawn_ptr[j][i][red_pawn - 1] = &pawns[12 + red_pawn - 1];
 					board->base_coords[3][red_pawn - 1][0] = j; board->base_coords[3][red_pawn - 1][1] = i;
+					board->how_many_pawns[j][i] = 1;
 
 					draw_pawn(j, i, 64, h, &pawns[red_pawn + 11]);
 
@@ -408,8 +411,9 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[blue_pawn + 7].y = i;
 					pawns[blue_pawn + 7].in_base = 1;
 
-					board->pawn_ptr[j][i][blue_pawn - 1] = &pawns[blue_pawn - 1];
+					board->pawn_ptr[j][i][blue_pawn - 1] = &pawns[8 + blue_pawn - 1];
 					board->base_coords[2][blue_pawn - 1][0] = j; board->base_coords[2][blue_pawn - 1][1] = i;
+					board->how_many_pawns[j][i] = 1;
 
 					draw_pawn(j, i, 16, h, &pawns[blue_pawn + 7]);
 
@@ -538,10 +542,46 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 			}
 		}
 	}
+	//debugging
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	for (int i = 0; i < 11; i++)
+	{
+		gotoxy(50, i, h);
+		for (int j = 0; j < 11; j++)
+		{
+			printf("%i  ", board->how_many_pawns[j][i]);
+		}
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	for (int i = 0; i < 11; i++)
+	{
+		gotoxy(50, i + 12, h);
+		for (int j = 0; j < 11; j++)
+		{
+			for (int k = 0; k < 4; k++)
+			{
+				if (board->pawn_ptr[j][i][k] != NULL)
+				{
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), board->pawn_ptr[j][i][k]->color);
+					printf("%i", board->pawn_ptr[j][i][k]->id);
+				}
+				else
+				{
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+					printf(" ");
+				}
+			}
+		}
+	}
+	//enddebugging
 	//rysowanie pionkow
-	int pawns = board->how_many_pawns[x][y];
+	if (x == 1 && y == 5)
+	{
+		//przy takich wartosciach wywala sie program;
+	}
+	int pawns = board->how_many_pawns[x][y];		//##ERROR
 	int *temp = which_is_not_null(x, y, board);
-	if (pawns == 1)
+	/*if (pawns == 1)
 	{
 		draw_pawn(x, y, 32, h, board->pawn_ptr[x][y][temp[0]]);
 	}
@@ -556,12 +596,11 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 	else if (pawns == 4)
 	{
 		draw_4_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]], board->pawn_ptr[x][y][temp[3]]);
-	}
-	//rysowanie baz
+	}*/
 
 }
 
-void return_to_base(_pawn *pawn, _board *board)
+void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 {
 	pawn->in_base = 1;
 	pawn->pos_on_road = 0;
@@ -586,9 +625,17 @@ void return_to_base(_pawn *pawn, _board *board)
 		pawn->y = board->base_coords[3][pawn->id][1];
 	}
 	board->pawn_ptr[pawn->x][pawn->y][pawn->id] = pawn;
+	board->how_many_pawns[pawn->x][pawn->y]++;
+	//rysowanie zbitego pionka w bazie
+	if ((pawn->x == 1 && pawn->y == 5) || (pawn->x == 0 && pawn->y == 9))
+	{
+		//przy takich wartosciach wywala sie program;
+		Sleep(100);
+	}
+	draw_field(pawn->x, pawn->y, board, h, -1);
 }
 
-void beat_enemy_pawns(_pawn *pawn, _board *board)
+void beat_enemy_pawns(_pawn *pawn, _board *board, HANDLE h)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -596,9 +643,10 @@ void beat_enemy_pawns(_pawn *pawn, _board *board)
 		{
 			if (board->pawn_ptr[pawn->x][pawn->y][i]->color != pawn->color)	//porownuje po kolorach, bo czemu nie
 			{
-				return_to_base(board->pawn_ptr[pawn->x][pawn->y][i], board);	//RETURN COS NIE DZIALA
+				return_to_base(board->pawn_ptr[pawn->x][pawn->y][i], board, h);	//RETURN COS NIE DZIALA
 				board->pawn_ptr[pawn->x][pawn->y][i] = NULL;
 				board->how_many_pawns[pawn->x][pawn->y]--;
+
 			}
 		}
 	}
@@ -606,6 +654,8 @@ void beat_enemy_pawns(_pawn *pawn, _board *board)
 
 void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 {
+	board->how_many_pawns[pawn->x][pawn->y]--;
+	board->pawn_ptr[pawn->x][pawn->y][return_index_of_pawn(pawn->x, pawn->y, pawn, board)] = NULL;
 	int x = board->exit_coords[player][0];
 	int y = board->exit_coords[player][1];
 	int color = board->exit_coords[player][2];
@@ -617,7 +667,7 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	pawn->y = y;
 	if (i > 0)
 	{
-		beat_enemy_pawns(pawn, board);
+		beat_enemy_pawns(pawn, board, h);
 	}
 	i = board->how_many_pawns[x][y];
 	//rysuje go na polu wyjsciowym w zaleznosci od stanu tego pola (ilosci pionkow)
@@ -696,7 +746,7 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _ro
 			Sleep(20);
 			if (i == (temp + dice - 1))
 			{
-				beat_enemy_pawns(pawn, board);
+				beat_enemy_pawns(pawn, board, h);
 			}
 			//rysowanie nowego pola
 			draw_field(road[i].x, road[i].y, board, h, i + 1);
@@ -1081,7 +1131,7 @@ int main()
 		{
 			pawn_nr = rand() % 4 + 1;
 
-			//printf("\nChoose pawn: ");
+			printf("\nChoose pawn: %i", pawn_nr);
 			//scanf("%i", &pawn_nr);
 			pawn = find_pawn_in_array(players[i].name, pawn_nr, pawns);
 			move_pawn(pawn, dice, board, h, pawns, roads[i]);
@@ -1095,6 +1145,53 @@ int main()
 			i++;
 		}
 		Sleep(100);
+
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+		for (int i = 0; i < 11; i++)
+		{
+			gotoxy(50, i, h);
+			for (int j = 0; j < 11; j++)
+			{
+				printf("%i  ", board->how_many_pawns[j][i]);
+			}
+		}
+		for (int i = 0; i < 11; i++)
+		{
+			gotoxy(50, i + 12, h);
+			for (int j = 0; j < 11; j++)
+			{
+				for (int k = 0; k < 4; k++)
+				{
+					if (board->pawn_ptr[j][i][k] != NULL)
+					{
+						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), board->pawn_ptr[j][i][k]->color);
+						printf("%i", board->pawn_ptr[j][i][k]->id);
+					}
+					else
+					{
+						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+						printf(" ");
+					}
+				}
+			}
+		}
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+		for (int i = 0; i < 11; i++)
+		{
+			for (int j = 0; j < 11; j++)
+			{
+				gotoxy(50 + i, 30 + j, h);
+				printf(" ");
+			}
+		}
+		for (int j = 0; j < 16; j++)
+		{
+			gotoxy(50+pawns[j].x, 30+pawns[j].y, h);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), pawns[j].color);
+			printf("%i",pawns[j].id);
+		}
+
+
 		clear_text(h);
 	}
 
