@@ -20,20 +20,6 @@ int throw_dice()
 	int dice = ((rand() % 6) + 1);
 	return dice;
 }
-
-
-
-int which_is_null(int x, int y, _board *board)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		if (board->pawn_ptr[x][y][i] == NULL)
-		{
-			return i;
-		}
-	}
-}
-
 //czysci tekst pod plansza
 void clear_text(HANDLE h)
 {
@@ -57,6 +43,9 @@ void clear_text(HANDLE h)
 
 int main()
 {
+	int pawn_nr;
+	int i = 0; //tymczasowo robi za ID graczy
+	int moved, dice, moveable;
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 	 _board *board = malloc(sizeof*board);
@@ -70,14 +59,18 @@ int main()
 
 	prepare_board_of_ptr(board);
 
-
 	_player players[4] = { "green", "yellow", "blue", "red" };
+	strcpy(players[0].name, "green");
+	strcpy(players[1].name, "yellow");
+	strcpy(players[2].name, "blue");
+	strcpy(players[3].name, "red");
+	for (int i = 0; i < 4; i++)
+	{
+		players[i].id = i;
+		players[i].random = 0;
+	}
 
 	draw_board(board, h, pawns);
-
-	int pawn_nr;
-	int i = 0; //tymczasowo robi za ID graczy
-	int moved,dice,moveable;
 
 	while (1)		//glowna petla gry
 	{
@@ -101,12 +94,13 @@ int main()
 		//scanf("%i", &dice);
 
 		printf("\nDice: %i", dice);
+		printf(", random move: %i", players[i].random);
 
 		//printf("Player: ");
 		//scanf("%i", &i);
 		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
 
-		if (dice != 6)
+		if (dice != 7)
 		{
 			for (int j = 0; j < 4; j++)
 			{
@@ -121,7 +115,7 @@ int main()
 		{
 			while (moved == 0)
 			{
-				pawn_nr = rand() % 4 + 1;
+				pawn_nr = choose_pawn(&players[i], dice, board, pawns, roads);
 				printf("\nChoosed pawn: %i", pawn_nr);
 				//scanf("%i", &pawn_nr);
 				if (pawns[4*i+pawn_nr-1].in_base == 1 && dice > 6)

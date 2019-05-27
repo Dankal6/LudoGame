@@ -176,7 +176,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					pawns[green_pawn - 1].id = green_pawn;
 					pawns[green_pawn - 1].color = 32;
-					sprintf(pawns[green_pawn - 1].player, "green");
+					pawns[green_pawn - 1].player = 0;
 					pawns[green_pawn - 1].x = j;
 					sprintf(pawns[green_pawn - 1].name, "gpawn%i", green_pawn);
 					pawns[green_pawn - 1].y = i;
@@ -199,7 +199,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					draw_square(j, i, 102, h);	//ZOLTY
 
-					sprintf(pawns[yellow_pawn + 3].player, "yellow");
+					pawns[yellow_pawn + 3].player=1;
 					pawns[yellow_pawn + 3].color = 96;
 					pawns[yellow_pawn + 3].id = yellow_pawn;
 					sprintf(pawns[yellow_pawn + 3].name, "ypawn%i", yellow_pawn);
@@ -225,7 +225,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 				{
 					draw_square(j, i, 68, h);	//CZERWONY
 
-					sprintf(pawns[red_pawn + 11].player, "red");
+					pawns[red_pawn + 11].player = 3;
 					pawns[red_pawn + 11].color = 64;
 					pawns[red_pawn + 11].id = red_pawn;
 					sprintf(pawns[red_pawn + 11].name, "rpawn%i", red_pawn);
@@ -250,7 +250,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					draw_square(j, i, 17, h);	//NIEBIESKI
 
-					sprintf(pawns[blue_pawn + 7].player, "blue");
+					pawns[blue_pawn + 7].player=2;
 					pawns[blue_pawn + 7].id = blue_pawn;
 					pawns[blue_pawn + 7].color = 16;
 					sprintf(pawns[blue_pawn + 7].name, "bpawn%i", blue_pawn);

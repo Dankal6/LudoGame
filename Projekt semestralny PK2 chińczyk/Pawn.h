@@ -22,3 +22,7 @@ void move_pawn(_pawn*, int, _board*, HANDLE, _pawn*, _road*);
 _pawn *find_pawn_in_array(char*, int, _pawn*);
 
 int *which_is_not_null(int, int, _board*);
+
+int which_is_null(int, int, _board*);
+
+int choose_pawn(int,int,_board*,_pawn*);	//dla gracza sterowanego przez komputer, aby "chetniej" zbijal gdy ma mozliwosc

@@ -13,10 +13,12 @@ typedef struct {
 
 typedef struct {
 	char name[7];	//mozna by dynamicznie, do ewentualnej poprawki
+	int id;
+	int random;
 }_player;
 
 typedef struct {
-	char player[7];		//mozna by dynamicznie, do ewentualnej poprawki
+	int player;		//mozna by dynamicznie, do ewentualnej poprawki
 	int id;
 	int x, y;
 	int pos_on_road;

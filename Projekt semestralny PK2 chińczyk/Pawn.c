@@ -108,26 +108,8 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 {
 	pawn->in_base = 1;
 	pawn->pos_on_road = 0;
-	if (strcmp(pawn->player, "green") == 0)
-	{
-		pawn->x = board->base_coords[0][pawn->id - 1][0];
-		pawn->y = board->base_coords[0][pawn->id - 1][1];
-	}
-	else if (strcmp(pawn->player, "yellow") == 0)
-	{
-		pawn->x = board->base_coords[1][pawn->id - 1][0];
-		pawn->y = board->base_coords[1][pawn->id - 1][1];
-	}
-	else if (strcmp(pawn->player, "blue") == 0)
-	{
-		pawn->x = board->base_coords[2][pawn->id - 1][0];
-		pawn->y = board->base_coords[2][pawn->id - 1][1];
-	}
-	else if (strcmp(pawn->player, "red") == 0)
-	{
-		pawn->x = board->base_coords[3][pawn->id - 1][0];
-		pawn->y = board->base_coords[3][pawn->id - 1][1];
-	}
+	pawn->x = board->base_coords[pawn->player][pawn->id - 1][0];
+	pawn->y = board->base_coords[pawn->player][pawn->id - 1][1];
 	board->pawn_ptr[pawn->x][pawn->y][pawn->id - 1] = pawn;	//ustawianie wskaznika na zbity pionek w bazie
 	board->how_many_pawns[pawn->x][pawn->y]++;	//inkrementacja ilosci pionkow na polu w bazie, na ktory wrocil pionek
 	//rysowanie zbitego pionka w bazie
@@ -210,25 +192,25 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	board->how_many_pawns[x][y]++;
 }
 
-void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _road *road)
+void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _road *road)	//pawns zdaje sie byc zbedne
 {
-
-	//sprawdzam, czy wybrany pionek znajduje sie w bazie !! dodac jeszcze sprawdzenie, czy dice ==6 !! + ewentualnie koordy baz w strukturze
+	//sprawdzam, czy wybrany pionek znajduje sie w bazie
 	if (pawn->in_base == 1)
 	{
-		if (strcmp(pawn->player, "green") == 0)	//pionek gracza ZIELONY
+		if (pawn->player == 0)	//pionek gracza ZIELONY
 		{
+
 			leave_the_base(0, pawn, board, h, pawns);
 		}
-		else if (strcmp(pawn->player, "yellow") == 0)	//pionek gracza ZOLTY
+		else if (pawn->player == 1)	//pionek gracza ZOLTY
 		{
 			leave_the_base(1, pawn, board, h, pawns);
 		}
-		else if (strcmp(pawn->player, "blue") == 0)	//pionek gracza NIEBIESKI
+		else if (pawn->player == 2)	//pionek gracza NIEBIESKI
 		{
 			leave_the_base(2, pawn, board, h, pawns);
 		}
-		else if (strcmp(pawn->player, "red") == 0)	//pionek gracza CZERWONY
+		else if (pawn->player == 3)	//pionek gracza CZERWONY
 		{
 			leave_the_base(3, pawn, board, h, pawns);
 		}
@@ -285,3 +267,90 @@ _pawn *find_pawn_in_array(char *player, int id, _pawn *pawns)
 		}
 	}
 }
+//zwraca indeks wskazujacy na nulla w tablicy pawn_ptr, aby tam ustawic wskaznik na nowoprzybylego pionka
+int which_is_null(int x, int y, _board *board)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (board->pawn_ptr[x][y][i] == NULL)
+		{
+			return i;
+		}
+	}
+}
+
+int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns, _road road[4][44])
+{
+	//na poczatek sprawdzam, czy na wyjsciu z bazy nie stoi przecinik, ktorego moglbym zbic
+	if (dice == 6)		//do testow zakomentowane
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i] != NULL)
+			{
+				if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i]->player != player->id)		//na wyjsciu stoi przeciwnik
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						if (pawns[player->id * 4 + i].in_base == 1)
+						{
+							//leave_the_base(player->id, &pawns[player->id * 4 + i], board, h);
+							return i+1;
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	//dla kazdego pionka spoza bazy sprawdzam, czy na koncu jego wedrowki nie stoi przecwiny pionek
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (pawns[player->id * 4 + i].in_base == 0)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					if (pawns[player->id * 4 + i].pos_on_road + dice < 44)
+					{
+						if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
+							[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j] != NULL)
+						{
+							if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
+								[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j]->player != player->id)
+							{
+								return i + 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (player->random == 0)
+	{
+		int farthest = 1;
+		int temp = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			if (pawns[player->id * 4 + i].pos_on_road > temp)
+			{
+				temp = pawns[player->id * 4 + i].pos_on_road;
+				farthest = i + 1;
+			}
+		}
+		player->random++;
+		return farthest;
+	}
+	else
+	{
+		player->random++;
+		if (player->random == 3)
+			player->random = 0;
+		return rand() % 4 + 1;
+	}
+
+}
+
+
+
