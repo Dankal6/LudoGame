@@ -275,3 +275,104 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 #pragma endregion 
 
 }
+
+//wypelniam NULLami
+void prepare_board_of_ptr(_board *board)
+{
+	for (int i = 0; i < 11; i++)
+	{
+		for (int j = 0; j < 11; j++)
+		{
+			for (int k = 0; k < 5; k++)
+			{
+				board->pawn_ptr[i][j][k] = NULL;
+			}
+		}
+	}
+}
+
+void draw_square(int x, int y, int color, HANDLE h)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		gotoxy(x * 4 + i, y * 2, h);
+		changeConsoleColor(color);
+		printf("%c", 219);
+		gotoxy(x * 4 + i, y * 2 + 1, h);
+		printf("%c", 219);
+	}
+	gotoxy(0, 30, h);
+}
+
+void draw_field(int x, int y, _board *board, HANDLE h, int i)
+{
+	//rysowanie wyjsc graczy
+	if (x == board->exit_coords[0][0] && y == board->exit_coords[0][1])
+	{
+		draw_square(x, y, 34, h);
+	}
+	else if (x == board->exit_coords[1][0] && y == board->exit_coords[1][1])
+	{
+		draw_square(x, y, 102, h);
+	}
+	else if (x == board->exit_coords[2][0] && y == board->exit_coords[2][1])
+	{
+		draw_square(x, y, 17, h);
+	}
+	else if (x == board->exit_coords[3][0] && y == board->exit_coords[3][1])
+	{
+		draw_square(x, y, 68, h);
+	}
+	//rysowanie pol bialo-szarych
+	else
+	{
+		if (i != -1)		//gdy pionek wraca po zbiciu do bazy i=-1 i nie rysuje pol bialo-szarych
+		{
+			if (i % 2 == 0)
+			{
+				draw_square(x, y, 119, h);
+			}
+			else
+			{
+				draw_square(x, y, 255, h);
+			}
+		}
+	}
+	//rysowanie mety graczy
+	int it, j;
+	for (it = 0; it < 4; it++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			if (x == board->meta_coords[it][j][0] && y == board->meta_coords[it][j][1])
+			{
+				if (it == 0)
+					draw_square(x, y, 34, h);
+				else if (it == 1)
+					draw_square(x, y, 102, h);
+				else if (it == 2)
+					draw_square(x, y, 17, h);
+				else if (it == 3)
+					draw_square(x, y, 68, h);
+			}
+		}
+	}
+	int pawns = board->how_many_pawns[x][y];		//##ERROR
+	int *temp = which_is_not_null(x, y, board);
+	if (pawns == 1)
+	{
+		draw_pawn(x, y, 32, h, board->pawn_ptr[x][y][temp[0]]);
+	}
+	else if (pawns == 2)
+	{
+		draw_2_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]]);
+	}
+	else if (pawns == 3)
+	{
+		draw_3_pawns(x, y, 34, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]]);
+	}
+	else if (pawns == 4)
+	{
+		draw_4_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]], board->pawn_ptr[x][y][temp[3]]);
+	}
+}

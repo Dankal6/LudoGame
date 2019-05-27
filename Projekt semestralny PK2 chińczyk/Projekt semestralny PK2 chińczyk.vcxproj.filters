@@ -24,6 +24,9 @@
     <ClCompile Include="Pawn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Roads.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Prepare_board.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Roads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

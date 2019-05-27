@@ -121,12 +121,14 @@
   <ItemGroup>
     <ClCompile Include="Pawn.c" />
     <ClCompile Include="Prepare_board.c" />
+    <ClCompile Include="Roads.c" />
     <ClCompile Include="Source.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header.h" />
     <ClInclude Include="Pawn.h" />
     <ClInclude Include="Prepare_board.h" />
+    <ClInclude Include="Roads.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,6 +6,14 @@
 #include <stdlib.h>
 #include <time.h>
 
+typedef struct {
+	int x;
+	int y;
+}_road;
+
+typedef struct {
+	char name[7];	//mozna by dynamicznie, do ewentualnej poprawki
+}_player;
 
 typedef struct {
 	char player[7];		//mozna by dynamicznie, do ewentualnej poprawki
