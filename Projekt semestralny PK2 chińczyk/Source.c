@@ -38,120 +38,6 @@ typedef struct {
 	char name[7];	//mozna by dynamicznie, do ewentualnej poprawki
 }_player;
 
-void changeConsoleColor(int x)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), x);
-}
-
-void gotoxy(int x, int y, HANDLE h)
-{
-	COORD c;
-	c.X = x;
-	c.Y = y;
-	SetConsoleCursorPosition(h, c);
-}
-
-void draw_pawn(int x, int y, int color, HANDLE h, _pawn *pawn)
-{
-	//zmiana wspolrzednych pionka
-	pawn->x = x;
-	pawn->y = y;
-	//zasadnicze rysowanie
-	changeConsoleColor(pawn->color);
-	for (int i = 1; i < 3; i++)
-	{
-		gotoxy(x * 4 + i, y * 2 + 1, h);
-		printf("%i", pawn->id);
-		gotoxy(x * 4 + i, y * 2, h);
-		printf("%i", pawn->id);
-	}
-	gotoxy(0, 30, h);
-}
-
-void draw_2_pawns(int x, int y, int color, HANDLE h, _pawn *pawn1, _pawn *pawn2)
-{
-	//zasadnicze rysowanie
-	//lewa kolumna pionka
-	{
-		changeConsoleColor(pawn1->color);
-		gotoxy(x * 4 + 1, y * 2 + 1, h);
-		printf("%i", pawn1->id);
-		gotoxy(x * 4 + 1, y * 2, h);
-		printf("%i", pawn1->id);
-	}
-	//prawa kolumna pionka
-	{
-		changeConsoleColor(pawn2->color);
-		gotoxy(x * 4 + 2, y * 2 + 1, h);
-		printf("%i", pawn2->id);
-		gotoxy(x * 4 + 2, y * 2, h);
-		printf("%i", pawn2->id);
-	}
-	gotoxy(0, 30, h);
-}
-
-void draw_3_pawns(int x, int y, int color, HANDLE h, _pawn *pawn1, _pawn *pawn2, _pawn *pawn3)
-{
-	//gorny wiersz pola
-	{
-		//lewa strona (pionek 1)
-		changeConsoleColor(pawn1->color);
-		gotoxy(x * 4 + 1, y * 2, h);
-		printf("%i", pawn1->id);
-		//prawa strona	(pionek 2)
-		changeConsoleColor(pawn2->color);
-		gotoxy(x * 4 + 2, y * 2, h);
-		printf("%i", pawn2->id);
-	}
-	//dolny wiersz pola
-	{
-		//lewa strona	(pionek 3)
-		changeConsoleColor(pawn3->color);
-		gotoxy(x * 4 + 1, y * 2 + 1, h);
-		printf("%i", pawn3->id);;
-	}
-	gotoxy(0, 30, h);
-}
-
-void draw_4_pawns(int x, int y, int color, HANDLE h, _pawn *pawn1, _pawn *pawn2, _pawn *pawn3, _pawn *pawn4)
-{
-	//gorny wiersz pola
-	{
-		//lewa strona (pionek 1)
-		changeConsoleColor(pawn1->color);
-		gotoxy(x * 4 + 1, y * 2, h);
-		printf("%i", pawn1->id);
-		//prawa strona	(pionek 2)
-		changeConsoleColor(pawn2->color);
-		gotoxy(x * 4 + 2, y * 2, h);
-		printf("%i", pawn2->id);
-	}
-	//dolny wiersz pola
-	{
-		//lewa strona	(pionek 3)
-		changeConsoleColor(pawn3->color);
-		gotoxy(x * 4 + 1, y * 2 + 1, h);
-		printf("%i", pawn3->id);
-		//prawa strona	(pionek 4)
-		changeConsoleColor(pawn4->color);
-		gotoxy(x * 4 + 2, y * 2 + 1, h);
-		printf("%i", pawn4->id);
-	}
-	gotoxy(0, 30, h);
-}
-
-void draw_square(int x, int y, int color, HANDLE h)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		gotoxy(x * 4 + i, y * 2, h);
-		changeConsoleColor(color);
-		printf("%c", 219);
-		gotoxy(x * 4 + i, y * 2 + 1, h);
-		printf("%c", 219);
-	}
-	gotoxy(0, 30, h);
-}
 
 void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 {
@@ -429,18 +315,119 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 }
 
-void show_board_as_strings(char(*board)[11][11][10])
+void changeConsoleColor(int x)
 {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("\n\n");
-	for (int i = 0; i < 11; i++)
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), x);
+}
+
+void gotoxy(int x, int y, HANDLE h)
+{
+	COORD c;
+	c.X = x;
+	c.Y = y;
+	SetConsoleCursorPosition(h, c);
+}
+
+void draw_pawn(int x, int y, int color, HANDLE h, _pawn *pawn)
+{
+	//zmiana wspolrzednych pionka
+	pawn->x = x;
+	pawn->y = y;
+	//zasadnicze rysowanie
+	changeConsoleColor(pawn->color);
+	for (int i = 1; i < 3; i++)
 	{
-		for (int j = 0; j < 11; j++)
-		{
-			printf("%s\t", (*board)[j][i]);
-		}
-		printf("\n");
+		gotoxy(x * 4 + i, y * 2 + 1, h);
+		printf("%i", pawn->id);
+		gotoxy(x * 4 + i, y * 2, h);
+		printf("%i", pawn->id);
 	}
+	gotoxy(0, 30, h);
+}
+
+void draw_2_pawns(int x, int y, int color, HANDLE h, _pawn *pawn1, _pawn *pawn2)
+{
+	//zasadnicze rysowanie
+	//lewa kolumna pionka
+	{
+		changeConsoleColor(pawn1->color);
+		gotoxy(x * 4 + 1, y * 2 + 1, h);
+		printf("%i", pawn1->id);
+		gotoxy(x * 4 + 1, y * 2, h);
+		printf("%i", pawn1->id);
+	}
+	//prawa kolumna pionka
+	{
+		changeConsoleColor(pawn2->color);
+		gotoxy(x * 4 + 2, y * 2 + 1, h);
+		printf("%i", pawn2->id);
+		gotoxy(x * 4 + 2, y * 2, h);
+		printf("%i", pawn2->id);
+	}
+	gotoxy(0, 30, h);
+}
+
+void draw_3_pawns(int x, int y, int color, HANDLE h, _pawn *pawn1, _pawn *pawn2, _pawn *pawn3)
+{
+	//gorny wiersz pola
+	{
+		//lewa strona (pionek 1)
+		changeConsoleColor(pawn1->color);
+		gotoxy(x * 4 + 1, y * 2, h);
+		printf("%i", pawn1->id);
+		//prawa strona	(pionek 2)
+		changeConsoleColor(pawn2->color);
+		gotoxy(x * 4 + 2, y * 2, h);
+		printf("%i", pawn2->id);
+	}
+	//dolny wiersz pola
+	{
+		//lewa strona	(pionek 3)
+		changeConsoleColor(pawn3->color);
+		gotoxy(x * 4 + 1, y * 2 + 1, h);
+		printf("%i", pawn3->id);;
+	}
+	gotoxy(0, 30, h);
+}
+
+void draw_4_pawns(int x, int y, int color, HANDLE h, _pawn *pawn1, _pawn *pawn2, _pawn *pawn3, _pawn *pawn4)
+{
+	//gorny wiersz pola
+	{
+		//lewa strona (pionek 1)
+		changeConsoleColor(pawn1->color);
+		gotoxy(x * 4 + 1, y * 2, h);
+		printf("%i", pawn1->id);
+		//prawa strona	(pionek 2)
+		changeConsoleColor(pawn2->color);
+		gotoxy(x * 4 + 2, y * 2, h);
+		printf("%i", pawn2->id);
+	}
+	//dolny wiersz pola
+	{
+		//lewa strona	(pionek 3)
+		changeConsoleColor(pawn3->color);
+		gotoxy(x * 4 + 1, y * 2 + 1, h);
+		printf("%i", pawn3->id);
+		//prawa strona	(pionek 4)
+		changeConsoleColor(pawn4->color);
+		gotoxy(x * 4 + 2, y * 2 + 1, h);
+		printf("%i", pawn4->id);
+	}
+	gotoxy(0, 30, h);
+}
+
+void draw_square(int x, int y, int color, HANDLE h)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		gotoxy(x * 4 + i, y * 2, h);
+		changeConsoleColor(color);
+		printf("%c", 219);
+		gotoxy(x * 4 + i, y * 2 + 1, h);
+		printf("%c", 219);
+	}
+	gotoxy(0, 30, h);
 }
 
 int throw_dice()
@@ -514,13 +501,16 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 	//rysowanie pol bialo-szarych
 	else
 	{
-		if (i % 2 == 0)
+		if (i != -1)		//gdy pionek wraca po zbiciu do bazy i=-1 i nie rysuje pol bialo-szarych
 		{
-			draw_square(x, y, 119, h);
-		}
-		else
-		{
-			draw_square(x, y, 255, h);
+			if (i % 2 == 0)
+			{
+				draw_square(x, y, 119, h);
+			}
+			else
+			{
+				draw_square(x, y, 255, h);
+			}
 		}
 	}
 	//rysowanie mety graczy
@@ -541,43 +531,6 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 					draw_square(x, y, 68, h);
 			}
 		}
-	}
-	//debugging
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	for (int i = 0; i < 11; i++)
-	{
-		gotoxy(50, i, h);
-		for (int j = 0; j < 11; j++)
-		{
-			printf("%i  ", board->how_many_pawns[j][i]);
-		}
-	}
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	for (int i = 0; i < 11; i++)
-	{
-		gotoxy(50, i + 12, h);
-		for (int j = 0; j < 11; j++)
-		{
-			for (int k = 0; k < 4; k++)
-			{
-				if (board->pawn_ptr[j][i][k] != NULL)
-				{
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), board->pawn_ptr[j][i][k]->color);
-					printf("%i", board->pawn_ptr[j][i][k]->id);
-				}
-				else
-				{
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-					printf(" ");
-				}
-			}
-		}
-	}
-	//enddebugging
-	//rysowanie pionkow
-	if (x == 1 && y == 5)
-	{
-		//przy takich wartosciach wywala sie program;
 	}
 	int pawns = board->how_many_pawns[x][y];		//##ERROR
 	int *temp = which_is_not_null(x, y, board);
@@ -605,25 +558,25 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 	pawn->pos_on_road = 0;
 	if (strcmp(pawn->player, "green") == 0)
 	{
-		pawn->x = board->base_coords[0][pawn->id-1][0];
-		pawn->y = board->base_coords[0][pawn->id-1][1];
+		pawn->x = board->base_coords[0][pawn->id - 1][0];
+		pawn->y = board->base_coords[0][pawn->id - 1][1];
 	}
 	else if (strcmp(pawn->player, "yellow") == 0)
 	{
-		pawn->x = board->base_coords[1][pawn->id-1][0];
-		pawn->y = board->base_coords[1][pawn->id-1][1];
+		pawn->x = board->base_coords[1][pawn->id - 1][0];
+		pawn->y = board->base_coords[1][pawn->id - 1][1];
 	}
 	else if (strcmp(pawn->player, "blue") == 0)
 	{
-		pawn->x = board->base_coords[2][pawn->id-1][0];
-		pawn->y = board->base_coords[2][pawn->id-1][1];
+		pawn->x = board->base_coords[2][pawn->id - 1][0];
+		pawn->y = board->base_coords[2][pawn->id - 1][1];
 	}
 	else if (strcmp(pawn->player, "red") == 0)
 	{
-		pawn->x = board->base_coords[3][pawn->id-1][0];
-		pawn->y = board->base_coords[3][pawn->id-1][1];
+		pawn->x = board->base_coords[3][pawn->id - 1][0];
+		pawn->y = board->base_coords[3][pawn->id - 1][1];
 	}
-	board->pawn_ptr[pawn->x][pawn->y][pawn->id-1] = pawn;	//ustawianie wskaznika na zbity pionek w bazie
+	board->pawn_ptr[pawn->x][pawn->y][pawn->id - 1] = pawn;	//ustawianie wskaznika na zbity pionek w bazie
 	board->how_many_pawns[pawn->x][pawn->y]++;	//inkrementacja ilosci pionkow na polu w bazie, na ktory wrocil pionek
 	//rysowanie zbitego pionka w bazie
 	draw_field(pawn->x, pawn->y, board, h, -1);
@@ -763,6 +716,10 @@ void clear_text(HANDLE h)
 	gotoxy(0, 25, h);
 	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
 	gotoxy(0, 26, h);
+	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
+	gotoxy(0, 27, h);
+	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
+	gotoxy(0, 28, h);
 	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
 	return;
 }
@@ -1077,8 +1034,8 @@ int main()
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD c;	//watpliwa uzytecznosc
-	_board *board = malloc(sizeof*board);
-	_pawn pawns[16];
+	 _board *board = malloc(sizeof*board);
+	 _pawn pawns[16];
 	//do przemyslenia, wyjatkowo ³opatologiczne
 	_road roads[4][44];
 	prepare_green_road(roads);
@@ -1093,23 +1050,28 @@ int main()
 
 	draw_board(board, h, pawns);
 
-	//show_board_as_strings(board);
-	/*for (int i = 0; i < 16; i++)
-	{
-		printf("%s", pawns[i].player);
-	}*/
-
 	int pawn_nr;
 	_pawn *pawn = (_pawn*)malloc(sizeof(_pawn));;
 	int i = 0; //tymczasowo robi za ID graczy
+	int moved,dice,moveable;
 
-	while (1)
+	while (1)		//glowna petla gry
 	{
+		if (i == 3)
+		{
+			i = 0;
+		}
+		else
+		{
+			i++;
+		}
+
+		moved = 0;
+		moveable = 0;
+		dice = throw_dice();
+
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		gotoxy(0, 22, h);
-
-		srand(time(0));
-		int dice = throw_dice();
 
 		//printf("Dice: ");
 		//scanf("%i", &dice);
@@ -1120,75 +1082,37 @@ int main()
 		//scanf("%i", &i);
 		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
 
-		if (dice < 44)
+		if (dice != 6)
 		{
-			pawn_nr = rand() % 4 + 1;
-
-			printf("\nChoose pawn: %i", pawn_nr);
-			//scanf("%i", &pawn_nr);
-			pawn = find_pawn_in_array(players[i].name, pawn_nr, pawns);
-			move_pawn(pawn, dice, board, h, pawns, roads[i]);
-		}
-		if (i == 3)
-		{
-			i = 0;
-		}
-		else
-		{
-			i++;
-		}
-		Sleep(100);
-
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-		for (int i = 0; i < 11; i++)
-		{
-			gotoxy(50, i, h);
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j < 4; j++)
 			{
-				printf("%i  ", board->how_many_pawns[j][i]);
-			}
-		}
-		for (int i = 0; i < 11; i++)
-		{
-			gotoxy(50, i + 12, h);
-			for (int j = 0; j < 11; j++)
-			{
-				for (int k = 0; k < 4; k++)
+				if (pawns[i * 4 + j].in_base == 0)
 				{
-					if (board->pawn_ptr[j][i][k] != NULL)
-					{
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), board->pawn_ptr[j][i][k]->color);
-						printf("%i", board->pawn_ptr[j][i][k]->id);
-					}
-					else
-					{
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-						printf(" ");
-					}
+					moveable = 1;
 				}
 			}
 		}
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-		for (int i = 0; i < 11; i++)
+
+		if (moveable==1 || dice ==6)
 		{
-			for (int j = 0; j < 11; j++)
+			while (moved == 0)
 			{
-				gotoxy(50 + i, 30 + j, h);
-				printf(" ");
+				pawn_nr = rand() % 4 + 1;
+				printf("\nChoosed pawn: %i", pawn_nr);
+				//scanf("%i", &pawn_nr);
+				pawn = find_pawn_in_array(players[i].name, pawn_nr, pawns);
+				if (pawn->in_base == 1 && dice != 6)
+				{
+					printf("You cant move that pawn!");
+					continue;
+				}
+				move_pawn(pawn, dice, board, h, pawns, roads[i]);
+				moved = 1;
 			}
 		}
-		for (int j = 0; j < 16; j++)
-		{
-			gotoxy(50+pawns[j].x, 30+pawns[j].y, h);
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), pawns[j].color);
-			printf("%i",pawns[j].id);
-		}
-
-
+		Sleep(100);
 		clear_text(h);
 	}
-
-
 	//wypisywanie dostepnych kolorow z calego zakresu
 	/*
 	for (int i = 0; i < 256; i++)
@@ -1196,7 +1120,6 @@ int main()
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), i);
 		printf("%i. Kolor pod numerem: %i\n", i,i);
 	}//*/
-
 	getch();
 	//system("pause");
 	return 0;
