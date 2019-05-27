@@ -96,7 +96,7 @@ int return_index_of_pawn(int x, int y, _pawn *pawn, _board *board)
 	{
 		if (board->pawn_ptr[x][y][i] != NULL)
 		{
-			if (strcmp(board->pawn_ptr[x][y][i]->name, pawn->name) == 0)
+			if ((board->pawn_ptr[x][y][i]->id == pawn->id) && (board->pawn_ptr[x][y][i]->player == pawn->player))
 			{
 				return i;
 			}
@@ -171,22 +171,22 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	if (i == 0)
 	{
 		draw_pawn(x, y, color, h, pawn);
-		board->pawns_on_that_field[x][y][i] = pawn;
+		//board->pawns_on_that_field[x][y][i] = pawn;
 	}
 	else if (i == 1)
 	{
 		draw_2_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]]);
-		board->pawns_on_that_field[x][y][i] = pawn;
+		//board->pawns_on_that_field[x][y][i] = pawn;
 	}
 	else if (i == 2)
 	{
 		draw_3_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]]);
-		board->pawns_on_that_field[x][y][i] = pawn;
+		//board->pawns_on_that_field[x][y][i] = pawn;
 	}
 	else if (i == 3)
 	{
 		draw_4_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]], board->pawn_ptr[x][y][temp[3]]);
-		board->pawns_on_that_field[x][y][i] = pawn;
+		//board->pawns_on_that_field[x][y][i] = pawn;
 	}
 
 	board->how_many_pawns[x][y]++;

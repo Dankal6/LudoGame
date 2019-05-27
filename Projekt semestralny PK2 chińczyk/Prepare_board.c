@@ -178,7 +178,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[green_pawn - 1].color = 32;
 					pawns[green_pawn - 1].player = 0;
 					pawns[green_pawn - 1].x = j;
-					sprintf(pawns[green_pawn - 1].name, "gpawn%i", green_pawn);
 					pawns[green_pawn - 1].y = i;
 					pawns[green_pawn - 1].in_base = 1;
 
@@ -202,7 +201,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[yellow_pawn + 3].player=1;
 					pawns[yellow_pawn + 3].color = 96;
 					pawns[yellow_pawn + 3].id = yellow_pawn;
-					sprintf(pawns[yellow_pawn + 3].name, "ypawn%i", yellow_pawn);
 					pawns[yellow_pawn + 3].x = j;
 					pawns[yellow_pawn + 3].y = i;
 					pawns[yellow_pawn + 3].in_base = 1;
@@ -228,7 +226,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[red_pawn + 11].player = 3;
 					pawns[red_pawn + 11].color = 64;
 					pawns[red_pawn + 11].id = red_pawn;
-					sprintf(pawns[red_pawn + 11].name, "rpawn%i", red_pawn);
 					pawns[red_pawn + 11].x = j;
 					pawns[red_pawn + 11].y = i;
 					pawns[red_pawn + 11].in_base = 1;
@@ -253,7 +250,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[blue_pawn + 7].player=2;
 					pawns[blue_pawn + 7].id = blue_pawn;
 					pawns[blue_pawn + 7].color = 16;
-					sprintf(pawns[blue_pawn + 7].name, "bpawn%i", blue_pawn);
 					pawns[blue_pawn + 7].x = j;
 					pawns[blue_pawn + 7].y = i;
 					pawns[blue_pawn + 7].in_base = 1;
