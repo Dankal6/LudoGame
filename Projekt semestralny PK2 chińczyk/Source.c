@@ -581,7 +581,7 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 	}
 	int pawns = board->how_many_pawns[x][y];		//##ERROR
 	int *temp = which_is_not_null(x, y, board);
-	/*if (pawns == 1)
+	if (pawns == 1)
 	{
 		draw_pawn(x, y, 32, h, board->pawn_ptr[x][y][temp[0]]);
 	}
@@ -596,8 +596,7 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 	else if (pawns == 4)
 	{
 		draw_4_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]], board->pawn_ptr[x][y][temp[3]]);
-	}*/
-
+	}
 }
 
 void return_to_base(_pawn *pawn, _board *board, HANDLE h)
@@ -606,32 +605,27 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 	pawn->pos_on_road = 0;
 	if (strcmp(pawn->player, "green") == 0)
 	{
-		pawn->x = board->base_coords[0][pawn->id][0];
-		pawn->y = board->base_coords[0][pawn->id][1];
+		pawn->x = board->base_coords[0][pawn->id-1][0];
+		pawn->y = board->base_coords[0][pawn->id-1][1];
 	}
 	else if (strcmp(pawn->player, "yellow") == 0)
 	{
-		pawn->x = board->base_coords[1][pawn->id][0];
-		pawn->y = board->base_coords[1][pawn->id][1];
+		pawn->x = board->base_coords[1][pawn->id-1][0];
+		pawn->y = board->base_coords[1][pawn->id-1][1];
 	}
 	else if (strcmp(pawn->player, "blue") == 0)
 	{
-		pawn->x = board->base_coords[2][pawn->id][0];
-		pawn->y = board->base_coords[2][pawn->id][1];
+		pawn->x = board->base_coords[2][pawn->id-1][0];
+		pawn->y = board->base_coords[2][pawn->id-1][1];
 	}
 	else if (strcmp(pawn->player, "red") == 0)
 	{
-		pawn->x = board->base_coords[3][pawn->id][0];
-		pawn->y = board->base_coords[3][pawn->id][1];
+		pawn->x = board->base_coords[3][pawn->id-1][0];
+		pawn->y = board->base_coords[3][pawn->id-1][1];
 	}
-	board->pawn_ptr[pawn->x][pawn->y][pawn->id] = pawn;
-	board->how_many_pawns[pawn->x][pawn->y]++;
+	board->pawn_ptr[pawn->x][pawn->y][pawn->id-1] = pawn;	//ustawianie wskaznika na zbity pionek w bazie
+	board->how_many_pawns[pawn->x][pawn->y]++;	//inkrementacja ilosci pionkow na polu w bazie, na ktory wrocil pionek
 	//rysowanie zbitego pionka w bazie
-	if ((pawn->x == 1 && pawn->y == 5) || (pawn->x == 0 && pawn->y == 9))
-	{
-		//przy takich wartosciach wywala sie program;
-		Sleep(100);
-	}
 	draw_field(pawn->x, pawn->y, board, h, -1);
 }
 
@@ -644,9 +638,8 @@ void beat_enemy_pawns(_pawn *pawn, _board *board, HANDLE h)
 			if (board->pawn_ptr[pawn->x][pawn->y][i]->color != pawn->color)	//porownuje po kolorach, bo czemu nie
 			{
 				return_to_base(board->pawn_ptr[pawn->x][pawn->y][i], board, h);	//RETURN COS NIE DZIALA
-				board->pawn_ptr[pawn->x][pawn->y][i] = NULL;
-				board->how_many_pawns[pawn->x][pawn->y]--;
-
+				board->pawn_ptr[pawn->x][pawn->y][i] = NULL;	//usuwanie wskaznika na pionek, ktory wlasnie wrocil do bazy
+				board->how_many_pawns[pawn->x][pawn->y]--;	//dekrementacja ilosci pionkow na usunietym polu 
 			}
 		}
 	}
