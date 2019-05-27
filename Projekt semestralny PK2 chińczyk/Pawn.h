@@ -1,4 +1,2 @@
 #pragma once
-
-
-typedef struct _board;
+#include "Header.h"
