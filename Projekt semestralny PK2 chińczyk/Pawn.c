@@ -94,9 +94,9 @@ int return_index_of_pawn(int x, int y, _pawn *pawn, _board *board)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board->pawn_ptr[x][y][i] != NULL)
+		if (board->road[pawn->pos_on_road].pawns[i] != NULL)
 		{
-			if ((board->pawn_ptr[x][y][i]->id == pawn->id) && (board->pawn_ptr[x][y][i]->player == pawn->player))
+			if ((board->road[pawn->pos_on_road].pawns[i]->id == pawn->id) && (board->road[pawn->pos_on_road].pawns[i]->player == pawn->player))
 			{
 				return i;
 			}
@@ -108,10 +108,11 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 {
 	pawn->in_base = 1;
 	pawn->pos_on_road = 0;
-	pawn->x = board->base_coords[pawn->player][pawn->id - 1][0];
-	pawn->y = board->base_coords[pawn->player][pawn->id - 1][1];
-	board->pawn_ptr[pawn->x][pawn->y][pawn->id - 1] = pawn;	//ustawianie wskaznika na zbity pionek w bazie
-	board->how_many_pawns[pawn->x][pawn->y]++;	//inkrementacja ilosci pionkow na polu w bazie, na ktory wrocil pionek
+
+	pawn->x = board->bases[pawn->player][pawn->id - 1].x;
+	pawn->y = board->bases[pawn->player][pawn->id - 1].y;
+	board->bases[pawn->x][pawn->y].pawns[pawn->id - 1] = pawn;	//ustawianie wskaznika na zbity pionek w bazie
+	board->bases[pawn->x][pawn->y].how_many_pawns++;	//inkrementacja ilosci pionkow na polu w bazie, na ktory wrocil pionek
 	//rysowanie zbitego pionka w bazie
 	draw_field(pawn->x, pawn->y, board, h, -1);
 }
@@ -120,26 +121,26 @@ void beat_enemy_pawns(_pawn *pawn, _board *board, HANDLE h)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board->pawn_ptr[pawn->x][pawn->y][i] != NULL)
+		if (board->road[pawn->pos_on_road].pawns[i] != NULL)
 		{
-			if (board->pawn_ptr[pawn->x][pawn->y][i]->color != pawn->color)	//porownuje po kolorach, bo czemu nie
+			if (board->road[pawn->pos_on_road].pawns[i]->color != pawn->color)	//porownuje po kolorach, bo czemu nie
 			{
-				return_to_base(board->pawn_ptr[pawn->x][pawn->y][i], board, h);	//RETURN COS NIE DZIALA
-				board->pawn_ptr[pawn->x][pawn->y][i] = NULL;	//usuwanie wskaznika na pionek, ktory wlasnie wrocil do bazy
-				board->how_many_pawns[pawn->x][pawn->y]--;	//dekrementacja ilosci pionkow na usunietym polu 
+				return_to_base(board->road[pawn->pos_on_road].pawns[i], board, h);
+				board->road[pawn->pos_on_road].pawns[i] = NULL;	//usuwanie wskaznika na pionek, ktory wlasnie wrocil do bazy
+				board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci pionkow na usunietym polu 
 			}
 		}
 	}
 }
 
 //funkcja zwraca indeksy pawn_ptr z board, na ktorych jest pionek, a nie NULL
-int *which_is_not_null(int x, int y, _board *board)
+int *which_is_not_null(_board *board, int x)
 {
 	int tab[4];
 	int j = 0;
 	for (int i = 0; i < 4; i++)
 	{
-		if (board->pawn_ptr[x][y][i] != NULL)
+		if (board->road[x].pawns[i] != NULL)
 		{
 			tab[j] = i;
 			j++;
@@ -148,16 +149,17 @@ int *which_is_not_null(int x, int y, _board *board)
 	return tab;
 }
 
-void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
+void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)		//player int na strukture do zmiany
 {
-	board->how_many_pawns[pawn->x][pawn->y]--;
-	board->pawn_ptr[pawn->x][pawn->y][return_index_of_pawn(pawn->x, pawn->y, pawn, board)] = NULL;
-	int x = board->exit_coords[player][0];
-	int y = board->exit_coords[player][1];
-	int color = board->exit_coords[player][2];
-	int i = which_is_null(x, y, board);
-	board->pawn_ptr[x][y][i] = pawn;
-	i = board->how_many_pawns[x][y];
+	board->bases[player->id][pawn->id].how_many_pawns--;
+	board->bases[player->id][pawn->id].pawns[0] = NULL;
+	int x = board->exits[player->id].x;
+	int y = board->exits[player->id].y;
+
+	int i = which_is_null(board, player->begin);
+	int color = board->bases[player->id][pawn->id].color;
+	board->road[player->begin].pawns[i] = pawn;
+	i = board->road[player->begin].how_many_pawns;
 	draw_square(pawn->x, pawn->y, color, h);	//usuwam pionka z bazy
 	pawn->x = x;
 	pawn->y = y;
@@ -165,54 +167,50 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	{
 		beat_enemy_pawns(pawn, board, h);
 	}
-	i = board->how_many_pawns[x][y];
+	i = board->exits[player->id].how_many_pawns;
 	//rysuje go na polu wyjsciowym w zaleznosci od stanu tego pola (ilosci pionkow)
-	int *temp = which_is_not_null(x, y, board);
+	int *temp = which_is_not_null(board,player->begin);
 	if (i == 0)
 	{
 		draw_pawn(x, y, color, h, pawn);
-		//board->pawns_on_that_field[x][y][i] = pawn;
 	}
 	else if (i == 1)
 	{
-		draw_2_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]]);
-		//board->pawns_on_that_field[x][y][i] = pawn;
+		draw_2_pawns(x, y, 32, h, board->exits[player->id].pawns[temp[0]], board->exits[player->id].pawns[temp[1]]);
 	}
 	else if (i == 2)
 	{
-		draw_3_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]]);
-		//board->pawns_on_that_field[x][y][i] = pawn;
+		draw_3_pawns(x, y, 32, h, board->exits[player->id].pawns[temp[0]], board->exits[player->id].pawns[temp[1]], board->exits[player->id].pawns[temp[2]]);
 	}
 	else if (i == 3)
 	{
-		draw_4_pawns(x, y, 32, h, board->pawn_ptr[x][y][temp[0]], board->pawn_ptr[x][y][temp[1]], board->pawn_ptr[x][y][temp[2]], board->pawn_ptr[x][y][temp[3]]);
-		//board->pawns_on_that_field[x][y][i] = pawn;
+		draw_4_pawns(x, y, 32, h, board->exits[player->id].pawns[temp[0]], board->exits[player->id].pawns[temp[1]], board->exits[player->id].pawns[temp[2]], board->exits[player->id].pawns[temp[4]]);
 	}
 
-	board->how_many_pawns[x][y]++;
+	board->exits[player->id].how_many_pawns++;
 }
 
-void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _road *road)	//pawns zdaje sie byc zbedne
+void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
 {
 	//sprawdzam, czy wybrany pionek znajduje sie w bazie
 	if (pawn->in_base == 1)
 	{
-		if (pawn->player == 0)	//pionek gracza ZIELONY
+		if (player->id == 0)	//pionek gracza ZIELONY
 		{
 
-			leave_the_base(0, pawn, board, h, pawns);
+			leave_the_base(player, pawn, board, h, pawns);
 		}
-		else if (pawn->player == 1)	//pionek gracza ZOLTY
+		else if (player->id == 1)	//pionek gracza ZOLTY
 		{
-			leave_the_base(1, pawn, board, h, pawns);
+			leave_the_base(player, pawn, board, h, pawns);
 		}
-		else if (pawn->player == 2)	//pionek gracza NIEBIESKI
+		else if (player->id == 2)	//pionek gracza NIEBIESKI
 		{
-			leave_the_base(2, pawn, board, h, pawns);
+			leave_the_base(player, pawn, board, h, pawns);
 		}
-		else if (pawn->player == 3)	//pionek gracza CZERWONY
+		else if (player->id == 3)	//pionek gracza CZERWONY
 		{
-			leave_the_base(3, pawn, board, h, pawns);
+			leave_the_base(player, pawn, board, h, pawns);
 		}
 		pawn->in_base = 0;
 		pawn->pos_on_road = 1;
@@ -228,14 +226,14 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _ro
 		}
 		for (int i = temp; i < (temp + dice); i++)
 		{
-			int x = road[i].x;
-			int y = road[i].y;
+			int x = board->road[i].x;
+			int y = board->road[i].y;
 			int empty = which_is_null(x, y, board);
 
-			board->pawn_ptr[x][y][empty] = pawn;	//dodaje wskazik na nowego pionka dla pola dalej
-			board->pawn_ptr[road[i - 1].x][road[i - 1].y][return_index_of_pawn(road[i - 1].x, road[i - 1].y, pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
-			board->how_many_pawns[road[i - 1].x][road[i - 1].y]--;	//dekrementacja ilosci piokow ze starego pola
-			board->how_many_pawns[x][y]++;	//inkrementacja ilosci pionkow na nowym polu
+			board->road[i].pawns[empty] = pawn;		//dodaje wskazik na nowego pionka dla pola dalej
+			board->road[i - 1].pawns[return_index_of_pawn(board->road[i - 1].x, board->road[i - 1].y, pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
+			board->road[i - 1].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
+			board->road[i].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
 			pawn->pos_on_road++;
 			pawn->x = x;
 			pawn->y = y;
@@ -245,9 +243,9 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _ro
 				beat_enemy_pawns(pawn, board, h);
 			}
 			//rysowanie nowego pola
-			draw_field(road[i].x, road[i].y, board, h, i + 1);
+			draw_field(board->road[i].x, board->road[i].y, board, h, i + 1);
 			//odtwarzanie starego pola
-			draw_field(road[i - 1].x, road[i - 1].y, board, h, i);
+			draw_field(board->road[i - 1].x, board->road[i - 1].y, board, h, i);
 		}
 	}
 	return;
@@ -268,34 +266,37 @@ _pawn *find_pawn_in_array(char *player, int id, _pawn *pawns)
 	}
 }
 //zwraca indeks wskazujacy na nulla w tablicy pawn_ptr, aby tam ustawic wskaznik na nowoprzybylego pionka
-int which_is_null(int x, int y, _board *board)
+int which_is_null(_board *board, int x)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board->pawn_ptr[x][y][i] == NULL)
+		if (board->road[x].pawns[i] == NULL)
 		{
 			return i;
 		}
 	}
 }
 
-int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns, _road road[4][44])
+int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 {
 	//na poczatek sprawdzam, czy na wyjsciu z bazy nie stoi przecinik, ktorego moglbym zbic
 	if (dice == 6)		//do testow zakomentowane
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i] != NULL)
+			//if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i] != NULL)
+			if (board->exits[player->id].how_many_pawns != 0)
 			{
-				if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i]->player != player->id)		//na wyjsciu stoi przeciwnik
+				if (board->exits[player->id].pawns[i] != NULL)
 				{
-					for (int i = 0; i < 4; i++)
+					if (board->exits[player->id].pawns[i]->player != player->id)		//na wyjsciu stoi przeciwnik, bo rozne ID graczy
 					{
-						if (pawns[player->id * 4 + i].in_base == 1)
+						for (int i = 0; i < 4; i++)
 						{
-							//leave_the_base(player->id, &pawns[player->id * 4 + i], board, h);
-							return i+1;
+							if (pawns[player->id * 4 + i].in_base == 1)			//sprawdzam, czy mam pionka w bazie
+							{
+								return i + 1;		//wychodze pionkiem, ktory jest w bazie i moze zbic czekajacego na wyjsciu przeciwnika
+							}
 						}
 					}
 				}
@@ -303,21 +304,20 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns, _road ro
 		}
 	}
 	else
-	//dla kazdego pionka spoza bazy sprawdzam, czy na koncu jego wedrowki nie stoi przecwiny pionek
+		//dla kazdego pionka spoza bazy sprawdzam, czy na koncu jego wedrowki nie stoi przecwiny pionek
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (pawns[player->id * 4 + i].in_base == 0)
+			_pawn toCheck = pawns[player->id * 4 + i];
+			if (toCheck.in_base == 0)			//sprawdzam, czy jest jakis pionek poza baza
 			{
 				for (int j = 0; j < 4; j++)
 				{
-					if (pawns[player->id * 4 + i].pos_on_road + dice < 44)
+					if (toCheck.pos_on_road + dice < 44)
 					{
-						if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
-							[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j] != NULL)
+						if (board->road[toCheck.pos_on_road + dice - 1].pawns[j] != NULL)
 						{
-							if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
-								[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j]->player != player->id)
+							if (board->road[toCheck.pos_on_road + dice - 1].pawns[j]->player != player->id)
 							{
 								return i + 1;
 							}

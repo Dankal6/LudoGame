@@ -73,19 +73,20 @@ int main()
 	 _board *board = malloc(sizeof*board);
 	 _pawn pawns[16];
 	//do przemyslenia, wyjatkowo ³opatologiczne
-	_road roads[4][44];
-	prepare_green_road(roads);
-	prepare_yellow_road(roads);
-	prepare_blue_road(roads);
-	prepare_red_road(roads);
+	prepare_green_road(board->road);
 
-	prepare_board_of_ptr(board);
+	//prepare_board_of_ptr(board);
 
 	_player players[4] = { "green", "yellow", "blue", "red" };
 	strcpy(players[0].name, "green");
 	strcpy(players[1].name, "yellow");
 	strcpy(players[2].name, "blue");
 	strcpy(players[3].name, "red");
+	players[0].begin = 0;
+	players[1].begin = 10;
+	players[2].begin = 20;
+	players[3].begin = 40;
+
 	for (int i = 0; i < 4; i++)
 	{
 		players[i].id = i;
@@ -139,7 +140,7 @@ int main()
 		{
 			while (moved == 0)
 			{
-				pawn_nr = choose_pawn(&players[i], dice, board, pawns, roads);
+				pawn_nr = choose_pawn(&players[i], dice, board, pawns);
 				printf("\nChoosed pawn: %i", pawn_nr);
 				//scanf("%i", &pawn_nr);
 				if (pawns[4*i+pawn_nr-1].in_base == 1 && dice > 6)
@@ -147,7 +148,7 @@ int main()
 					printf("You cant move that pawn!");
 					continue;
 				}
-				move_pawn(&pawns[4*i + pawn_nr-1], dice, board, h, pawns, roads[i]);
+				move_pawn(&pawns[4*i + pawn_nr-1], dice, board, h, pawns,players[i]);
 				moved = 1;
 			}
 		}
