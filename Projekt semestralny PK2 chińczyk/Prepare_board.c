@@ -147,6 +147,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[green_pawn - 1].y = i;
 					pawns[green_pawn - 1].in_base = 1;
 
+					board->pawn_ptr[j][i] = malloc(sizeof(_pawn));
 					board->pawn_ptr[j][i][green_pawn - 1] = &pawns[green_pawn - 1];
 					board->base_coords[0][green_pawn - 1][0] = j; board->base_coords[0][green_pawn - 1][1] = i;
 					board->how_many_pawns[j][i] = 1;
@@ -170,6 +171,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[yellow_pawn + 3].y = i;
 					pawns[yellow_pawn + 3].in_base = 1;
 
+					board->pawn_ptr[j][i] = malloc(sizeof(_pawn));
 					board->pawn_ptr[j][i][yellow_pawn - 1] = &pawns[4 + yellow_pawn - 1];
 					board->base_coords[1][yellow_pawn - 1][0] = j; board->base_coords[1][yellow_pawn - 1][1] = i;
 					board->how_many_pawns[j][i] = 1;
@@ -193,6 +195,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[red_pawn + 11].y = i;
 					pawns[red_pawn + 11].in_base = 1;
 
+					board->pawn_ptr[j][i] = malloc(sizeof(_pawn));
 					board->pawn_ptr[j][i][red_pawn - 1] = &pawns[12 + red_pawn - 1];
 					board->base_coords[3][red_pawn - 1][0] = j; board->base_coords[3][red_pawn - 1][1] = i;
 					board->how_many_pawns[j][i] = 1;
@@ -216,6 +219,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[blue_pawn + 7].y = i;
 					pawns[blue_pawn + 7].in_base = 1;
 
+					board->pawn_ptr[j][i] = malloc(sizeof(_pawn));
 					board->pawn_ptr[j][i][blue_pawn - 1] = &pawns[8 + blue_pawn - 1];
 					board->base_coords[2][blue_pawn - 1][0] = j; board->base_coords[2][blue_pawn - 1][1] = i;
 					board->how_many_pawns[j][i] = 1;
@@ -242,7 +246,7 @@ void prepare_board_of_ptr(_board *board)
 		{
 			for (int k = 0; k < 5; k++)
 			{
-				board->pawn_ptr[i][j][k] = NULL;
+				board->pawn_ptr[i][j] = NULL;
 			}
 		}
 	}

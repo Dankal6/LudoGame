@@ -94,11 +94,14 @@ int return_index_of_pawn(int x, int y, _pawn *pawn, _board *board)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board->pawn_ptr[x][y][i] != NULL)
+		if (board->pawn_ptr[x][y] != NULL)
 		{
-			if ((board->pawn_ptr[x][y][i]->id == pawn->id) && (board->pawn_ptr[x][y][i]->player == pawn->player))
+			if (board->pawn_ptr[x][y][i] != NULL)
 			{
-				return i;
+				if ((board->pawn_ptr[x][y][i]->id == pawn->id) && (board->pawn_ptr[x][y][i]->player == pawn->player))
+				{
+					return i;
+				}
 			}
 		}
 	}
@@ -156,6 +159,7 @@ void leave_the_base(int player, _pawn *pawn, _board *board, HANDLE h)
 	int y = board->exit_coords[player][1];
 	int color = board->exit_coords[player][2];
 	int i = which_is_null(x, y, board);
+	board->pawn_ptr[x][y] = malloc(sizeof(_pawn));
 	board->pawn_ptr[x][y][i] = pawn;
 	i = board->how_many_pawns[x][y];
 	draw_square(pawn->x, pawn->y, color, h);	//usuwam pionka z bazy
@@ -232,6 +236,7 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _ro
 			int y = road[i].y;
 			int empty = which_is_null(x, y, board);
 
+			board->pawn_ptr[x][y] = malloc(sizeof(_pawn)*board->how_many_pawns[x][y]);
 			board->pawn_ptr[x][y][empty] = pawn;	//dodaje wskazik na nowego pionka dla pola dalej
 			board->pawn_ptr[road[i - 1].x][road[i - 1].y][return_index_of_pawn(road[i - 1].x, road[i - 1].y, pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
 			board->how_many_pawns[road[i - 1].x][road[i - 1].y]--;	//dekrementacja ilosci piokow ze starego pola
@@ -272,7 +277,7 @@ int which_is_null(int x, int y, _board *board)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board->pawn_ptr[x][y][i] == NULL)
+		if (board->pawn_ptr[x][y] == NULL)
 		{
 			return i;
 		}
@@ -286,16 +291,19 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns, _road ro
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i] != NULL)
+			if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]] != NULL)
 			{
-				if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i]->player != player->id)		//na wyjsciu stoi przeciwnik
+				if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i] != NULL)
 				{
-					for (int i = 0; i < 4; i++)
+					if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i]->player != player->id)		//na wyjsciu stoi przeciwnik
 					{
-						if (pawns[player->id * 4 + i].in_base == 1)
+						for (int i = 0; i < 4; i++)
 						{
-							//leave_the_base(player->id, &pawns[player->id * 4 + i], board, h);
-							return i+1;
+							if (pawns[player->id * 4 + i].in_base == 1)
+							{
+								//leave_the_base(player->id, &pawns[player->id * 4 + i], board, h);
+								return i + 1;
+							}
 						}
 					}
 				}
@@ -314,12 +322,16 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns, _road ro
 					if (pawns[player->id * 4 + i].pos_on_road + dice < 44)
 					{
 						if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
-							[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j] != NULL)
+							[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y] != NULL)
 						{
 							if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
-								[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j]->player != player->id)
+								[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j] != NULL)
 							{
-								return i + 1;
+								if (board->pawn_ptr[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].x]
+									[road[player->id][pawns[player->id * 4 + i].pos_on_road + dice - 1].y][j]->player != player->id)
+								{
+									return i + 1;
+								}
 							}
 						}
 					}
