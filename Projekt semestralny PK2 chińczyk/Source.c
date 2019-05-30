@@ -41,6 +41,28 @@ void clear_text(HANDLE h)
 	return;
 }
 
+void save_to_file(_pawn * pawn)
+{
+	FILE *fp; /* u¿ywamy metody wysokopoziomowej - musimy mieæ zatem identyfikator pliku, uwaga na gwiazdkê! */
+	if ((fp = fopen("save.txt", "w")) == NULL) {
+		printf("Can not open file!\n");
+		return;
+	}
+	for (int i = 0; i < 16; i++)
+	{
+		fprintf(fp, "Pawn: %i\n", pawn[i].id + (4* pawn[i].player));
+		fprintf(fp, "%i\n", pawn[i].id);
+		fprintf(fp, "%i\n", pawn[i].player);
+		fprintf(fp, "%i\n", pawn[i].color);
+		fprintf(fp, "%i\n", pawn[i].in_base);
+		fprintf(fp, "%i\n", pawn[i].pos_on_road);
+		fprintf(fp, "%i\n", pawn[i].x);
+		fprintf(fp, "%i\n", pawn[i].y);
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+}
+
 int main()
 {
 	int pawn_nr;
@@ -82,6 +104,8 @@ int main()
 		{
 			i++;
 		}
+
+		save_to_file(pawns);
 
 		moved = 0;
 		moveable = 0;
@@ -130,14 +154,5 @@ int main()
 		Sleep(100);
 		clear_text(h);
 	}
-	//wypisywanie dostepnych kolorow z calego zakresu
-	/*
-	for (int i = 0; i < 256; i++)
-	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), i);
-		printf("%i. Kolor pod numerem: %i\n", i,i);
-	}//*/
-	getch();
-	//system("pause");
 	return 0;
 }

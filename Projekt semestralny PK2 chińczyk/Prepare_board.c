@@ -24,27 +24,10 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 	{
 		for (int j = 0; j < 11; j++)
 		{
-			//strcpy(*board->coords[j][i], "0");
-			strcpy(board->coords[j][i], "0");
 			board->how_many_pawns[i][j] = 0;
 		}
 	}
 
-	/*for (i = 0; i < 22; i++)
-	{
-		for (j = 0; j < 44; j++)
-		{
-			if (i < 4 || i>17)
-			{
-				if (j < 8 || j>35)
-				{
-					(*board)[i][j] = 177;
-					continue;
-				}
-			}
-			(*board)[i][j] = 219;
-		}
-	}*/
 	//RYSOWANIE
 #pragma region pas_poziomy
 	for (int j = 0; j < 11; j++)
@@ -52,17 +35,13 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 		if (white == 1)
 		{
 			draw_square(j, i, 255, h);
-			sprintf((board->coords)[j][i], "empty");
 			draw_square(j, i + 2, 255, h);
-			sprintf((board->coords)[j][i + 2], "empty");
 			white = 0;
 		}
 		else if (white == 0)
 		{
 			draw_square(j, i, 119, h);
-			sprintf((board->coords)[j][i], "empty");
 			draw_square(j, i + 2, 119, h);
-			sprintf((board->coords)[j][i + 2], "empty");
 			white = 1;
 		}
 		if (j == 0 || j == 10)
@@ -70,27 +49,22 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 			if (j == 0)
 			{
 				draw_square(j, i, 34, h); //WYJSCIE Z BAZY ZIELONEGO
-				sprintf((board->coords)[j][i], "gexit");
 			}
 			else
 			{
 				draw_square(j, i + 2, 17, h); //WYJSCIE Z BAZY NIEBIESKIEGO
-				sprintf((board->coords)[j][i + 2], "bexit");
 			}
 			draw_square(j, i + 1, 119, h);
-			sprintf((board->coords)[j][i + 1], "empty");
 		}
 		else if (j > 0 && j < 5)
 		{
 			draw_square(j, i + 1, 34, h);	//META ZIELONEGO
-			sprintf((board->coords)[j][i + 1], "gend");
 			board->meta_coords[0][j - 1][0] = j;
 			board->meta_coords[0][j - 1][1] = i + 1;
 		}
 		else if (j < 10 && j>5)
 		{
 			draw_square(j, i + 1, 17, h);	//META NIEBIESKIEGO
-			sprintf((board->coords)[j][i + 1], "bend");
 			board->meta_coords[2][j - 6][0] = j;
 			board->meta_coords[2][j - 6][1] = i + 1;
 		}
@@ -106,27 +80,23 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 			if (i == 0 && j == 6) //WYJSCIE Z BAZY ZOLTEGO
 			{
 				draw_square(j, i, 102, h);
-				sprintf((board->coords)[j][i], "yexit");
 				white = 0;
 				continue;
 			}
 			if (i == 10 && j == 4)
 			{
 				draw_square(j, i, 68, h); //WYJSCIE Z BAZY CZERWONEGO
-				sprintf((board->coords)[j][i], "rexit");
 				white = 0;
 				continue;
 			}
 			if (white == 1)
 			{
 				draw_square(j, i, 255, h);
-				sprintf((board->coords)[j][i], "empty");
 				white = 0;
 			}
 			else if (white == 0)
 			{
 				draw_square(j, i, 119, h);
-				sprintf((board->coords)[j][i], "empty");;
 				white = 1;
 			}
 			if (i > 0 && i < 5)
@@ -134,7 +104,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 				if (j > 4 && j < 6)
 				{
 					draw_square(j, i, 102, h);	//META ZOLTEGO
-					sprintf((board->coords)[j][i], "yend");
 					board->meta_coords[1][i - 1][0] = j;
 					board->meta_coords[1][i - 1][1] = i;
 					continue;
@@ -145,7 +114,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 				if (j > 4 && j < 6)
 				{
 					draw_square(j, i, 68, h);	//META CZERWONEGO
-					sprintf((board->coords)[j][i], "rend");
 					board->meta_coords[3][i - 6][0] = j;
 					board->meta_coords[3][i - 6][1] = i;
 					continue;
@@ -154,13 +122,11 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 			else if (j < 5 && (i == 5))
 			{
 				draw_square(j, i, 34, h); //META ZIELONEGO
-				sprintf((board->coords)[j][i], "gend");
 				continue;
 			}
 			else if (j > 5 && (i == 5))
 			{
 				draw_square(j, i, 17, h);	//META NIEBIESKIEGO
-				sprintf((board->coords)[j][i], "bend");
 				continue;
 			}
 		}
@@ -188,7 +154,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					draw_pawn(j, i, 32, h, &pawns[green_pawn - 1]);
 
-					sprintf((board->coords)[j][i], "gpawn%i", green_pawn);
 
 					green_pawn++;
 					continue;
@@ -210,8 +175,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->how_many_pawns[j][i] = 1;
 
 					draw_pawn(j, i, 96, h, &pawns[yellow_pawn + 3]);
-
-					sprintf((board->coords)[j][i], "ypawn%i", yellow_pawn);
 
 					yellow_pawn++;
 					continue;
@@ -236,7 +199,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					draw_pawn(j, i, 64, h, &pawns[red_pawn + 11]);
 
-					sprintf((board->coords)[j][i], "rpawn%i", red_pawn);
 
 					red_pawn++;
 					continue;
@@ -260,7 +222,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 					draw_pawn(j, i, 16, h, &pawns[blue_pawn + 7]);
 
-					sprintf((board->coords)[j][i], "bpawn%i", blue_pawn);
 
 					blue_pawn++;
 					continue;
@@ -286,7 +247,7 @@ void prepare_board_of_ptr(_board *board)
 		}
 	}
 }
-
+//Rysuje kwadrat
 void draw_square(int x, int y, int color, HANDLE h)
 {
 	for (int i = 0; i < 4; i++)
@@ -353,7 +314,7 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 			}
 		}
 	}
-	int pawns = board->how_many_pawns[x][y];		//##ERROR
+	int pawns = board->how_many_pawns[x][y];	
 	int *temp = which_is_not_null(x, y, board);
 	if (pawns == 1)
 	{
