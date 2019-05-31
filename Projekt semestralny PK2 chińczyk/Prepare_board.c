@@ -154,17 +154,12 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[green_pawn - 1].pos_on_road = 0;
 					pawns[green_pawn - 1].next = NULL;
 
-					/*_pawn *new_pawn = (_pawn*)malloc(sizeof(_pawn));
-					new_pawn = NULL;
-					push_back(&new_pawn, &pawns[green_pawn - 1]);
-					push_back(&new_pawn, &pawns[green_pawn - 1]);
-					pop_front(&new_pawn);*/
-
 					board->bases[0][green_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[0][green_pawn - 1].pawns = NULL;
 					push_back(&board->bases[0][green_pawn - 1].pawns, &pawns[green_pawn - 1]);
 
-					board->bases[0][green_pawn - 1].x = j; board->bases[1][green_pawn - 1].y = i;
+					board->bases[0][green_pawn - 1].x = j; 
+					board->bases[0][green_pawn - 1].y = i;
 					board->bases[0][green_pawn - 1].how_many_pawns = 1;
 
 					draw_pawn(j, i, 32, h, &pawns[green_pawn - 1]);
@@ -190,7 +185,8 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[1][yellow_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[1][yellow_pawn - 1].pawns = NULL;
 					push_back(&board->bases[1][yellow_pawn - 1].pawns, &pawns[3 + yellow_pawn]);
-					board->bases[1][yellow_pawn - 1].x = j; board->bases[1][yellow_pawn - 1].y = i;
+					board->bases[1][yellow_pawn - 1].x = j; 
+					board->bases[1][yellow_pawn - 1].y = i;
 					board->bases[1][yellow_pawn - 1].how_many_pawns = 1;
 
 					draw_pawn(j, i, 96, h, &pawns[yellow_pawn + 3]);
@@ -217,7 +213,8 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[3][red_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[3][red_pawn - 1].pawns = NULL;
 					push_back(&board->bases[3][red_pawn - 1].pawns, &pawns[11 + red_pawn]);
-					board->bases[3][red_pawn - 1].x = j; board->bases[1][red_pawn - 1].y = i;
+					board->bases[3][red_pawn - 1].x = j; 
+					board->bases[3][red_pawn - 1].y = i;
 					board->bases[3][red_pawn - 1].how_many_pawns = 1;
 
 					draw_pawn(j, i, 64, h, &pawns[red_pawn + 11]);
@@ -244,7 +241,8 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[2][blue_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[2][blue_pawn - 1].pawns = NULL;
 					push_back(&board->bases[2][blue_pawn - 1].pawns, &pawns[7 + blue_pawn]);
-					board->bases[2][blue_pawn - 1].x = j; board->bases[2][blue_pawn - 1].y = i;
+					board->bases[2][blue_pawn - 1].x = j; 
+					board->bases[2][blue_pawn - 1].y = i;
 					board->bases[2][blue_pawn - 1].how_many_pawns = 1;
 
 					draw_pawn(j, i, 16, h, &pawns[blue_pawn + 7]);
@@ -273,9 +271,11 @@ void draw_square(int x, int y, int color, HANDLE h)
 	gotoxy(0, 30, h);
 }
 
-void draw_field(int x, int y, _board *board, HANDLE h, int i)
+void draw_field(_field *field, _board *board, HANDLE h, int i)
 {
 	//rysowanie wyjsc graczy
+	int x = field->x;
+	int y = field->y;
 	if (x == board->exits[0].x && y == board->exits[0].y)
 	{
 		draw_square(x, y, 34, h);
@@ -327,10 +327,10 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 		}
 	}
 	//rysowanie pionkow
-	int pawns = board->road[i].how_many_pawns;
+	int pawns = field->how_many_pawns;
 	if (pawns == 1)
 	{
-		draw_pawn(x, y, 32, h, board->road[i].pawns);
+		draw_pawn(x, y, 32, h, field->pawns);
 	}
 	else if (pawns == 2)
 	{

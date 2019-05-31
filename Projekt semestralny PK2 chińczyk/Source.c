@@ -82,16 +82,28 @@ int main()
 	strcpy(players[1].name, "yellow");
 	strcpy(players[2].name, "blue");
 	strcpy(players[3].name, "red");
-	players[0].begin = 1;
-	players[1].begin = 11;
-	players[2].begin = 21;
-	players[3].begin = 31;
+	players[0].begin = 0;
+	players[1].begin = 10;
+	players[2].begin = 20;
+	players[3].begin = 30;
 
 	for (int i = 0; i < 4; i++)
 	{
 		players[i].id = i;
 		players[i].random = 0;
+		for (int j = 0; j < 4; j++)
+		{
+			if(i==0)
+				board->bases[i][j].color = 34;
+			else if(i==1)
+				board->bases[i][j].color = 102;
+			else if(i==2)
+				board->bases[i][j].color = 17;
+			else if(i==3)
+				board->bases[i][j].color = 68;
+		}
 	}
+	//34,32 - ZIELONY ; 102,96 ZOLTY ; 68,64 CZERWONY ; 17,16 NIEBIESKI
 
 	draw_board(board, h, pawns);
 
