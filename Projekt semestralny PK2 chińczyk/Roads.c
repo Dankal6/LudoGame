@@ -66,10 +66,9 @@ void prepare_green_road(_field road[40])
 		road[j].x = i;
 		j++;
 	}
-	for (int i = 0; i < 40; i++)
+	for (j = 0; j < 40; j++)
 	{
-		road[i].pawns = malloc(sizeof(_pawn));
-		road[i].pawns[0] = NULL;
+		road[j].pawns = NULL;
 	}
 }
 

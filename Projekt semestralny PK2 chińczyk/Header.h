@@ -22,17 +22,18 @@ typedef struct {
 	int begin;
 }_player;
 
-typedef struct {
+typedef struct{
 	int player;
 	int id;
 	int x, y;
 	int pos_on_road;
 	int in_base;
 	int color;
+	struct _pawn *next;
 }_pawn;
 
 typedef struct {
-	_pawn **pawns;				//przechowuje wskazniki na pionki znajdujace sie na danym polu
+	_pawn *pawns;				//przechowuje wskazniki na pionki znajdujace sie na danym polu
 	int x, y, how_many_pawns,color;	//koordy + przechowuje informacje na temat ilosci pionkow na danym polu
 }_field;
 

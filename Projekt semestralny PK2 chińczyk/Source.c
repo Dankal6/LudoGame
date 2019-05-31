@@ -82,10 +82,10 @@ int main()
 	strcpy(players[1].name, "yellow");
 	strcpy(players[2].name, "blue");
 	strcpy(players[3].name, "red");
-	players[0].begin = 0;
-	players[1].begin = 10;
-	players[2].begin = 20;
-	players[3].begin = 40;
+	players[0].begin = 1;
+	players[1].begin = 11;
+	players[2].begin = 21;
+	players[3].begin = 31;
 
 	for (int i = 0; i < 4; i++)
 	{

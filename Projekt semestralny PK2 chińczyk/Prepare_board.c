@@ -152,9 +152,18 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[green_pawn - 1].y = i;
 					pawns[green_pawn - 1].in_base = 1;
 					pawns[green_pawn - 1].pos_on_road = 0;
+					pawns[green_pawn - 1].next = NULL;
 
-					board->bases[0][green_pawn - 1].pawns = malloc(sizeof(_pawn));
-					board->bases[0][green_pawn - 1].pawns[0] = &pawns[green_pawn - 1];
+					/*_pawn *new_pawn = (_pawn*)malloc(sizeof(_pawn));
+					new_pawn = NULL;
+					push_back(&new_pawn, &pawns[green_pawn - 1]);
+					push_back(&new_pawn, &pawns[green_pawn - 1]);
+					pop_front(&new_pawn);*/
+
+					board->bases[0][green_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
+					board->bases[0][green_pawn - 1].pawns = NULL;
+					push_back(&board->bases[0][green_pawn - 1].pawns, &pawns[green_pawn - 1]);
+
 					board->bases[0][green_pawn - 1].x = j; board->bases[1][green_pawn - 1].y = i;
 					board->bases[0][green_pawn - 1].how_many_pawns = 1;
 
@@ -176,12 +185,11 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[yellow_pawn + 3].y = i;
 					pawns[yellow_pawn + 3].in_base = 1;
 					pawns[yellow_pawn + 3].pos_on_road = 0;
+					pawns[yellow_pawn + 3].next = NULL;
 
-
-					_pawn *new = malloc(sizeof(_pawn));
-					new = &pawns[3 + yellow_pawn];
-					board->bases[1][yellow_pawn - 1].pawns = malloc(sizeof(_pawn));
-					board->bases[1][yellow_pawn - 1].pawns[0] = &pawns[3 + yellow_pawn];
+					board->bases[1][yellow_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
+					board->bases[1][yellow_pawn - 1].pawns = NULL;
+					push_back(&board->bases[1][yellow_pawn - 1].pawns, &pawns[3 + yellow_pawn]);
 					board->bases[1][yellow_pawn - 1].x = j; board->bases[1][yellow_pawn - 1].y = i;
 					board->bases[1][yellow_pawn - 1].how_many_pawns = 1;
 
@@ -204,9 +212,11 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[red_pawn + 11].y = i;
 					pawns[red_pawn + 11].in_base = 1;
 					pawns[red_pawn + 11].pos_on_road = 0;
+					pawns[red_pawn + 11].next = NULL;
 
-					board->bases[3][red_pawn - 1].pawns = malloc(sizeof(_pawn));
-					board->bases[3][red_pawn - 1].pawns[0] = &pawns[11 + red_pawn];
+					board->bases[3][red_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
+					board->bases[3][red_pawn - 1].pawns = NULL;
+					push_back(&board->bases[3][red_pawn - 1].pawns, &pawns[11 + red_pawn]);
 					board->bases[3][red_pawn - 1].x = j; board->bases[1][red_pawn - 1].y = i;
 					board->bases[3][red_pawn - 1].how_many_pawns = 1;
 
@@ -229,9 +239,11 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[blue_pawn + 7].y = i;
 					pawns[blue_pawn + 7].in_base = 1;
 					pawns[blue_pawn + 7].pos_on_road = 0;
+					pawns[blue_pawn + 7].next = NULL;
 
-					board->bases[2][blue_pawn - 1].pawns = malloc(sizeof(_pawn));
-					board->bases[2][blue_pawn - 1].pawns[0] = &pawns[7 + blue_pawn];
+					board->bases[2][blue_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
+					board->bases[2][blue_pawn - 1].pawns = NULL;
+					push_back(&board->bases[2][blue_pawn - 1].pawns, &pawns[7 + blue_pawn]);
 					board->bases[2][blue_pawn - 1].x = j; board->bases[2][blue_pawn - 1].y = i;
 					board->bases[2][blue_pawn - 1].how_many_pawns = 1;
 
@@ -248,21 +260,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 }
 
-//wypelniam NULLami
-/*void prepare_board_of_ptr(_board *board)
-{
-	for (int i = 0; i < 11; i++)
-	{
-		for (int j = 0; j < 11; j++)
-		{
-			for (int k = 0; k < 5; k++)
-			{
-				board->pawn_ptr[i][j][k] = NULL;
-			}
-		}
-	}
-}*/
-//Rysuje kwadrat
 void draw_square(int x, int y, int color, HANDLE h)
 {
 	for (int i = 0; i < 4; i++)
@@ -329,22 +326,22 @@ void draw_field(int x, int y, _board *board, HANDLE h, int i)
 			}
 		}
 	}
+	//rysowanie pionkow
 	int pawns = board->road[i].how_many_pawns;
-	int *temp = which_is_not_null(x, y, board);
-	if (i == 0)
+	if (pawns == 1)
 	{
-		draw_pawn(x, y, 32, h, board->road[i].pawns[temp[0]]);
+		draw_pawn(x, y, 32, h, board->road[i].pawns);
 	}
-	else if (i == 1)
+	else if (pawns == 2)
 	{
-		draw_2_pawns(x, y, 32, h, board->road[i].pawns[temp[0]], board->road[i].pawns[temp[1]]);
+		draw_2_pawns(x, y, 32, h, board->road[i].pawns);
 	}
-	else if (i == 2)
+	else if (pawns == 3)
 	{
-		draw_3_pawns(x, y, 32, h, board->road[i].pawns[temp[0]], board->road[i].pawns[temp[1]], board->road[i].pawns[temp[2]]);
+		draw_3_pawns(x, y, 32, h, board->road[i].pawns);
 	}
-	else if (i == 3)
+	else if (pawns == 4)
 	{
-		draw_4_pawns(x, y, 32, h, board->road[i].pawns[temp[0]], board->road[i].pawns[temp[1]], board->road[i].pawns[temp[2]], board->road[i].pawns[temp[4]]);
+		draw_4_pawns(x, y, 32, h, board->road[i].pawns);
 	}
 }

@@ -3,13 +3,13 @@
 
 void draw_pawn(int, int, int, HANDLE, _pawn*);
 
-void draw_2_pawns(int, int, int, HANDLE, _pawn*, _pawn*);
+void draw_2_pawns(int, int, int, HANDLE, _pawn*);
 
-void draw_3_pawns(int, int, int, HANDLE, _pawn*, _pawn*, _pawn*);
+void draw_3_pawns(int, int, int, HANDLE, _pawn*);
 
-void draw_4_pawns(int, int, int, HANDLE, _pawn*, _pawn*, _pawn*, _pawn*);
+void draw_4_pawns(int, int, int, HANDLE, _pawn*);
 
-int return_index_of_pawn(int, int, _pawn*, _board*);
+int return_index_of_pawn(_pawn*, _board*);
 
 void return_to_base(_pawn*, _board*, HANDLE);
 
@@ -26,3 +26,9 @@ int *which_is_not_null(_board*, int);
 int which_is_null(_board*,int);
 
 int choose_pawn(int,int,_board*,_pawn*);	//dla gracza sterowanego przez komputer, aby "chetniej" zbijal gdy ma mozliwosc
+
+/*void pop_front(_pawn **);
+
+void pop_by_index(_pawn **, int);
+
+void push_back(_pawn **, _pawn *);*/
