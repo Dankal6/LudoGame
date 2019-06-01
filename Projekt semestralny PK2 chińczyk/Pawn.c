@@ -1,5 +1,72 @@
 #include "Pawn.h"
 
+void pop_front(_pawn **head)
+{
+	_pawn * temp = (*head);
+	if (*head != NULL)
+	{
+		/*temp = (*head)->next;
+		free(*head);
+		*head = temp;*/
+		(*head) = (*head)->next;
+		temp = NULL;
+
+	}
+}
+
+void pop_by_index(_pawn **head, int position)
+{
+	if (position == 0)
+	{
+		pop_front(head);
+	}
+	else
+	{
+		_pawn *current = *head;
+		_pawn *temp;
+		int i = 0;
+		while (current->next != NULL && i < position - 1)
+		{
+			current = current->next;
+			i++;
+		}
+		temp = current->next;
+		current->next = temp->next;
+		temp = NULL;
+	}
+}
+
+void push_back(_pawn **head, _pawn *pawn)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	printf("Wstawiam w liscie pionka o adresie: %p\n", pawn);	//poki co podejrzany
+	_pawn *temp = pawn;
+	pawn->next = NULL;
+	/*temp->player = pawn->player;
+	temp->color = pawn->color;
+	temp->id = pawn->id;
+	temp->in_base = pawn->in_base;
+	temp->pos_on_road = pawn->pos_on_road;
+	temp->x = pawn->x;
+	temp->y = pawn->y;
+	temp->next = NULL;*/
+	printf("W liscie mam adres: %p\n", temp);
+
+	if (*head == NULL)
+	{
+		*head = temp;
+	}
+	else
+	{
+		_pawn *current = *head;
+		while (current->next != NULL)
+		{
+			current = current->next;
+		}
+		current->next = temp;
+	}
+}
+
 void draw_pawn(int x, int y, int color, HANDLE h, _pawn *pawn)
 {
 	//zasadnicze rysowanie
@@ -94,6 +161,8 @@ void draw_4_pawns(int x, int y, int color, HANDLE h, _pawn *pawn)
 
 void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 {
+	gotoxy(0, 34, h);
+	printf("Otrzymalem pionka o adresie: %p\n", pawn);	//wskazuje na dobrego pionka
 	pawn->in_base = 1;
 	pawn->pos_on_road = 0;
 
@@ -105,75 +174,23 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 	draw_field(board->bases[pawn->player][pawn->id - 1], board, h, -1);
 }
 
-void pop_front(_pawn **head)
-{
-	_pawn * temp = malloc(sizeof(_pawn));
-	if (*head != NULL)
-	{
-		temp = (*head)->next;
-		free(*head);
-		*head = temp;
-	}
-}
-
-void pop_by_index(_pawn **head, int position)
-{
-	if (position == 0)
-	{
-		pop_front(head);
-	}
-	else
-	{
-		_pawn *current = *head;
-		_pawn *temp;
-		int i = 0;
-		while (current->next != NULL && i < position - 1)
-		{
-			current = current->next;
-			i++;
-		}
-		temp = current->next;
-		current->next = temp->next;
-		free(temp);
-	}
-}
-
-void push_back(_pawn **head, _pawn *pawn)
-{
-	_pawn *temp = (_pawn*)malloc(sizeof(_pawn));
-	temp->player = pawn->player;
-	temp->color = pawn->color;
-	temp->id = pawn->id;
-	temp->in_base = pawn->in_base;
-	temp->pos_on_road = pawn->pos_on_road;
-	temp->x = pawn->x;
-	temp->y = pawn->y;
-	temp->next = NULL;
-
-	if (*head == NULL)
-	{
-		*head = temp;
-	}
-	else
-	{
-		_pawn *current = *head;
-		while (current->next != NULL)
-		{
-			current = current->next;
-		}
-		current->next = temp;
-	}
-}
-
 void beat_enemy_pawns(_pawn *pawn, _board *board, HANDLE h)
 {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	gotoxy(0, 31, h);
+	printf("Pawn: %p\n", pawn);	//poki co podejrzany
+	printf("Board: %p\n", board->road[pawn->pos_on_road].pawns);
+	//printf("array address inside function: %p\n", **pawn);
 	int i = 0;
+	int temp2 = board->road[pawn->pos_on_road].how_many_pawns;
 	_pawn *temp = board->road[pawn->pos_on_road].pawns;
-	for (int i = 0; i < board->road[pawn->pos_on_road].how_many_pawns; i++)
+	printf("Temp dostal adres: %p\n", temp);	//poki co podejrzany
+	for (int i = 0; i < temp2; i++)
 	{
 		if (temp->color != pawn->color)	//porownuje po kolorach, bo czemu nie
 		{
-			return_to_base(board->road[pawn->pos_on_road].pawns, board, h);
+			printf("Wysylam pionka o adresie: %p\n", temp);	//poki co podejrzany
+			return_to_base(temp, board, h);
 			pop_front(&board->road[pawn->pos_on_road].pawns);	//usuwanie wskaznika na pionek, ktory wlasnie wrocil do bazy
 			board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci pionkow na usunietym polu 
 			temp = board->road[pawn->pos_on_road].pawns;
@@ -189,7 +206,7 @@ int position_in_list(_pawn **head, _pawn *pawn)
 	int i = 0;
 	while (temp)
 	{
-		if (temp->id == pawn->id)
+		if ((temp->id == pawn->id) && (temp->player==pawn->player))
 		{
 			return i;
 		}
@@ -216,8 +233,9 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 		board->road[player->begin].pawns = malloc(sizeof(_pawn));		//przydzielanie pamieci
 		board->road[player->begin].pawns = NULL;
 	}
-
+	printf("Wstawiam do listy pionka o adresie: %p\n", pawn);	//poki co podejrzany
 	push_back(&board->road[player->begin].pawns, pawn);		//ustawiam wskaznik na nowego pionka
+	printf("W liscie mam adres: %p\n", board->road[player->begin].pawns);
 	board->road[player->begin].how_many_pawns++;		//inkrementuje ilosc pionkow na polu
 	draw_square(pawn->x, pawn->y, color, h);	//usuwam pionka z bazy
 	pawn->x = x;
@@ -227,13 +245,17 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 	{
 		beat_enemy_pawns(pawn, board, h);
 	}
-	//rysuje go na polu wyjsciowym w zaleznosci od stanu tego pola (ilosci pionkow)
+	i = board->road[player->begin].how_many_pawns;	//sprawdzam ilosc pionkow na nowym polu po zbiciu
 	if (i == 1)
 	{
 		draw_pawn(x, y, color, h, board->road[player->begin].pawns);
 	}
 	else if (i == 2)
 	{
+		if (board->road[player->begin].pawns->next == NULL)
+		{
+			int x; //halo halo blad
+		}
 		draw_2_pawns(x, y, 32, h, board->road[player->begin].pawns);
 	}
 	else if (i == 3)
@@ -248,6 +270,9 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 
 void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
 {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	gotoxy(0, 30, h);
+	printf("array address inside function: %p\n", pawns);
 	//sprawdzam, czy wybrany pionek znajduje sie w bazie
 	if (pawn->in_base == 1)
 	{
@@ -293,9 +318,10 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 				board->road[next_field].pawns = NULL;
 			}
 
-			push_back(&board->road[next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
 			int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
 			pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
+			push_back(&board->road[next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
+
 
 			//board->road[i].pawns[return_index_of_pawn(pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
 			//free(board->road[i].pawns[return_index_of_pawn(pawn, board)]);
@@ -310,7 +336,7 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 			}
 			pawn->x = x;
 			pawn->y = y;
-			Sleep(20);
+			Sleep(50);
 			if (i == (dice - 1) && board->road[next_field].how_many_pawns > 1)
 			{
 				beat_enemy_pawns(pawn, board, h);
@@ -369,11 +395,11 @@ int check_if_enemy(_pawn *head, _player *player)
 int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 {
 	//na poczatek sprawdzam, czy na wyjsciu z bazy nie stoi przecinik, ktorego moglbym zbic
-	if (dice == 6)		//do testow zakomentowane
+	//if (dice == 6)		//do testow zakomentowane
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			//if (board->pawn_ptr[board->exit_coords[player->id][0]][board->exit_coords[player->id][1]][i] != NULL)
+			//if (board->pawn_ptr[board->exit_coords[player.id][0]][board->exit_coords[player.id][1]][i] != NULL)
 			if (board->road[player->begin].how_many_pawns != 0)
 			{
 				if (check_if_enemy(board->road[player->begin].pawns, player) == 1)		//na wyjsciu stoi przeciwnik, bo rozne ID graczy
@@ -390,7 +416,7 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 		}
 	}
 	//dla kazdego pionka spoza bazy sprawdzam, czy na koncu jego wedrowki nie stoi przecwiny pionek
-	else
+	//else
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -403,7 +429,7 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 					{
 						toCheck.pos_on_road = dice - (39 - toCheck.pos_on_road);
 					}
-					if (check_if_enemy(board->road[toCheck.pos_on_road + dice - 1].pawns, player) == 1)
+					if (check_if_enemy(board->road[toCheck.pos_on_road + dice].pawns, player) == 1)
 					{
 						return i + 1;
 					}

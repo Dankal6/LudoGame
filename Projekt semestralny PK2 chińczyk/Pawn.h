@@ -15,20 +15,18 @@ void return_to_base(_pawn*, _board*, HANDLE);
 
 void beat_enemy_pawns(_pawn*, _board*, HANDLE);
 
-void leave_the_base(int, _pawn*, _board*, HANDLE);
+void leave_the_base(_player*, _pawn*, _board*, HANDLE);
 
-void move_pawn(_pawn*, int, _board*, HANDLE, _pawn*, _road*);
+void move_pawn(_pawn*, int, _board*, HANDLE, _pawn*, _player*);
 
 _pawn *find_pawn_in_array(char*, int, _pawn*);
 
-int *which_is_not_null(_board*, int);
+int choose_pawn(_player*,int,_board*,_pawn*);	//dla gracza sterowanego przez komputer, aby "chetniej" zbijal gdy ma mozliwosc
 
-int which_is_null(_board*,int);
+void draw_field(_field field, _board*, HANDLE, int);
 
-int choose_pawn(int,int,_board*,_pawn*);	//dla gracza sterowanego przez komputer, aby "chetniej" zbijal gdy ma mozliwosc
-
-/*void pop_front(_pawn **);
+void pop_front(_pawn **);
 
 void pop_by_index(_pawn **, int);
 
-void push_back(_pawn **, _pawn *);*/
+void push_back(_pawn **, _pawn *);
