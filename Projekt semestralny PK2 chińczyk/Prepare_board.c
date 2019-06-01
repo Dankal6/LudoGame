@@ -152,6 +152,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[green_pawn - 1].y = i;
 					pawns[green_pawn - 1].in_base = 1;
 					pawns[green_pawn - 1].pos_on_road = 0;
+					pawns[green_pawn - 1].on_meta = 0;
 					pawns[green_pawn - 1].next = NULL;
 
 					board->bases[0][green_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -180,6 +181,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[yellow_pawn + 3].y = i;
 					pawns[yellow_pawn + 3].in_base = 1;
 					pawns[yellow_pawn + 3].pos_on_road = 0;
+					pawns[yellow_pawn + 3].on_meta = 0;
 					pawns[yellow_pawn + 3].next = NULL;
 
 					board->bases[1][yellow_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -208,6 +210,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[red_pawn + 11].y = i;
 					pawns[red_pawn + 11].in_base = 1;
 					pawns[red_pawn + 11].pos_on_road = 0;
+					pawns[red_pawn + 11].on_meta = 0;
 					pawns[red_pawn + 11].next = NULL;
 
 					board->bases[3][red_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -236,6 +239,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					pawns[blue_pawn + 7].y = i;
 					pawns[blue_pawn + 7].in_base = 1;
 					pawns[blue_pawn + 7].pos_on_road = 0;
+					pawns[blue_pawn + 7].on_meta = 0;
 					pawns[blue_pawn + 7].next = NULL;
 
 					board->bases[2][blue_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -312,7 +316,7 @@ void draw_field(_field field, _board *board, HANDLE h, int i)
 		}
 	}
 	//rysowanie mety graczy
-	/*int it, j;
+	int it, j;
 	for (it = 0; it < 4; it++)
 	{
 		for (j = 0; j < 4; j++)
@@ -329,7 +333,7 @@ void draw_field(_field field, _board *board, HANDLE h, int i)
 					draw_square(x, y, 68, h);
 			}
 		}
-	}*/
+	}
 	//rysowanie pionkow
 	int pawns = field.how_many_pawns;
 	if (pawns == 1)
@@ -338,10 +342,6 @@ void draw_field(_field field, _board *board, HANDLE h, int i)
 	}
 	else if (pawns == 2)
 	{
-		if (board->road[i].pawns->next == NULL)
-		{
-			int x; //halo halo blad
-		}
 		draw_2_pawns(x, y, 32, h, board->road[i].pawns);
 	}
 	else if (pawns == 3)

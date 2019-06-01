@@ -182,7 +182,7 @@ int main()
 		moved = 0;
 		moveable = 0;
 		dice = throw_dice();
-		int manual = 1;
+		int manual = 0;
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		gotoxy(0, 22, h);

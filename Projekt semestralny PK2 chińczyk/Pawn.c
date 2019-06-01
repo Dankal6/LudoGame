@@ -206,7 +206,7 @@ int position_in_list(_pawn **head, _pawn *pawn)
 	int i = 0;
 	while (temp)
 	{
-		if ((temp->id == pawn->id) && (temp->player==pawn->player))
+		if ((temp->id == pawn->id) && (temp->player == pawn->player))
 		{
 			return i;
 		}
@@ -252,10 +252,6 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 	}
 	else if (i == 2)
 	{
-		if (board->road[player->begin].pawns->next == NULL)
-		{
-			int x; //halo halo blad
-		}
 		draw_2_pawns(x, y, 32, h, board->road[player->begin].pawns);
 	}
 	else if (i == 3)
@@ -265,6 +261,47 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 	else if (i == 4)
 	{
 		draw_4_pawns(x, y, 32, h, board->road[player->begin].pawns);
+	}
+}
+
+void go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)
+{
+	for (int i = 0; i < dice;i++)
+	{
+		if (pawn->on_meta < 5)
+		{
+			int next_field = pawn->on_meta - 1;
+			int x = board->meta[player->id][next_field].x;
+			int y = board->meta[player->id][next_field].y;
+
+			int pawns = board->meta[player->id][next_field].how_many_pawns;
+			if (pawns == 0)
+			{
+				board->meta[player->id][next_field].pawns = malloc(sizeof(_pawn));		//przydzielanie pamieci
+				board->meta[player->id][next_field].pawns = NULL;
+			}
+
+			if (pawn->on_meta >= 2)
+			{
+				int pos = position_in_list(&board->meta[player->id][pawn->on_meta - 2].pawns, pawn);
+				pop_by_index(&board->meta[player->id][pawn->on_meta - 2].pawns, pos);
+				board->meta[player->id][pawn->on_meta - 2].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
+			}
+
+			push_back(&board->meta[player->id][next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
+
+
+			board->meta[player->id][next_field].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
+
+			pawn->x = x;
+			pawn->y = y;
+			Sleep(50);
+			//rysowanie nowego pola
+			draw_field(board->meta[player->id][next_field], board, h, next_field);
+			//odtwarzanie starego pola
+			draw_field(board->meta[player->id][next_field - 1], board, h, next_field - 1);
+			pawn->on_meta++;
+		}
 	}
 }
 
@@ -293,17 +330,23 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 			leave_the_base(player, pawn, board, h, pawns);
 		}
 	}
-	else
+	else if (pawn->on_meta == 0)
 	{
 		int temp = pawn->pos_on_road;
 		int temp2 = temp;
 		for (int i = 0; i < dice; i++)
 		{
-			if (i == 39)
-			{
-				i = 39;
-			}
 			int next_field = pawn->pos_on_road + 1;
+			if ((player->begin - pawn->pos_on_road == 1 && player->id!=0) || (player->id == 0 && pawn->pos_on_road == 39))	//wchodze na mete
+			{
+				int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
+				pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
+				board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
+				pawn->on_meta = 1;
+				draw_field(board->road[next_field - 1], board, h, next_field - 1);
+				go_finish(pawn, dice - i, board, h, pawns, player);
+				return;
+			}
 			if (next_field == 40)
 			{
 				next_field = 0;
@@ -321,11 +364,6 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 			int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
 			pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
 			push_back(&board->road[next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
-
-
-			//board->road[i].pawns[return_index_of_pawn(pawn, board)] = NULL;	//usuwam wskaznik na pionek ze starego pola, z ktorego odchodze
-			//free(board->road[i].pawns[return_index_of_pawn(pawn, board)]);
-			//free(board->road[i].pawns);
 
 			board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
 			board->road[next_field].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
@@ -353,6 +391,10 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 				draw_field(board->road[next_field - 1], board, h, next_field - 1);
 			}
 		}
+	}
+	else
+	{
+		go_finish(pawn, dice, board, h, pawns, player);
 	}
 	return;
 }
@@ -395,7 +437,7 @@ int check_if_enemy(_pawn *head, _player *player)
 int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 {
 	//na poczatek sprawdzam, czy na wyjsciu z bazy nie stoi przecinik, ktorego moglbym zbic
-	//if (dice == 6)		//do testow zakomentowane
+	if (dice == 6)		//do testow zakomentowane
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -416,7 +458,7 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 		}
 	}
 	//dla kazdego pionka spoza bazy sprawdzam, czy na koncu jego wedrowki nie stoi przecwiny pionek
-	//else
+	else
 	{
 		for (int i = 0; i < 4; i++)
 		{

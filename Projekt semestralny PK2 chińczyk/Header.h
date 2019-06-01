@@ -28,6 +28,7 @@ typedef struct{
 	int x, y;
 	int pos_on_road;
 	int in_base;
+	int on_meta;
 	int color;
 	struct _pawn *next;
 }_pawn;
