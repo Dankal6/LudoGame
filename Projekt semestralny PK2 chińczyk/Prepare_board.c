@@ -35,6 +35,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 	//RYSOWANIE
 #pragma region pas_poziomy
+	int k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza niebieskiego
 	for (int j = 0; j < 11; j++)
 	{
 		if (white == 1)
@@ -70,14 +71,16 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 		else if (j < 10 && j>5)
 		{
 			draw_square(j, i + 1, 17, h);	//META NIEBIESKIEGO
-			board->meta[2][j - 6].x = j;
-			board->meta[2][j - 6].y = i + 1;
+			board->meta[2][j-6].x = k;
+			board->meta[2][j-6].y = i + 1;
+			k--;
 		}
 	}
 
 #pragma endregion
 	white = 1;
 #pragma region pas_pionowy_+_bazy
+	k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza czerwonego
 	for (int i = 0; i < 11; i++)
 	{
 		for (int j = 4; j < 7; j++)
@@ -120,7 +123,8 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 				{
 					draw_square(j, i, 68, h);	//META CZERWONEGO
 					board->meta[3][i - 6].x = j;
-					board->meta[3][i - 6].y = i;
+					board->meta[3][i - 6].y = k;
+					k--;
 					continue;
 				}
 			}
@@ -163,7 +167,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[0][green_pawn - 1].y = i;
 					board->bases[0][green_pawn - 1].how_many_pawns = 1;
 
-					draw_pawn(j, i, 32, h, &pawns[green_pawn - 1]);
+					draw_pawns(board->bases[0][green_pawn - 1], h);
 
 
 					green_pawn++;
@@ -191,7 +195,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[1][yellow_pawn - 1].y = i;
 					board->bases[1][yellow_pawn - 1].how_many_pawns = 1;
 
-					draw_pawn(j, i, 96, h, &pawns[yellow_pawn + 3]);
+					draw_pawns(board->bases[1][yellow_pawn - 1], h);
 
 					yellow_pawn++;
 					continue;
@@ -220,7 +224,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[3][red_pawn - 1].y = i;
 					board->bases[3][red_pawn - 1].how_many_pawns = 1;
 
-					draw_pawn(j, i, 64, h, &pawns[red_pawn + 11]);
+					draw_pawns(board->bases[3][red_pawn - 1], h);
 
 
 					red_pawn++;
@@ -249,7 +253,7 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[2][blue_pawn - 1].y = i;
 					board->bases[2][blue_pawn - 1].how_many_pawns = 1;
 
-					draw_pawn(j, i, 16, h, &pawns[blue_pawn + 7]);
+					draw_pawns(board->bases[2][blue_pawn - 1], h);
 
 
 					blue_pawn++;
@@ -335,21 +339,5 @@ void draw_field(_field field, _board *board, HANDLE h, int i)
 		}
 	}
 	//rysowanie pionkow
-	int pawns = field.how_many_pawns;
-	if (pawns == 1)
-	{
-		draw_pawn(x, y, 32, h, field.pawns);
-	}
-	else if (pawns == 2)
-	{
-		draw_2_pawns(x, y, 32, h, board->road[i].pawns);
-	}
-	else if (pawns == 3)
-	{
-		draw_3_pawns(x, y, 32, h, board->road[i].pawns);
-	}
-	else if (pawns == 4)
-	{
-		draw_4_pawns(x, y, 32, h, board->road[i].pawns);
-	}
+	draw_pawns(field, h);
 }

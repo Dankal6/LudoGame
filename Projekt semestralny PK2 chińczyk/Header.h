@@ -20,6 +20,7 @@ typedef struct {
 	int id;
 	int random;
 	int begin;
+	int won;
 }_player;
 
 typedef struct{

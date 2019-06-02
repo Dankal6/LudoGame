@@ -89,7 +89,7 @@ void load_from_file(_pawn *pawn, _board *board)
 		fscanf(fp, "%i", &pawn[i].y);
 		if (pawn[i].pos_on_road == 0)
 		{
-			push_back(&board->bases[pawn[i].player][pawn[i].id-1].pawns, &pawn[i]);		//ustawiam wskaznik na pionka w bazie
+			push_back(&board->bases[pawn[i].player][pawn[i].id - 1].pawns, &pawn[i]);		//ustawiam wskaznik na pionka w bazie
 			board->bases[pawn[i].player][pawn[i].id - 1].how_many_pawns = 1;
 		}
 		else
@@ -104,12 +104,12 @@ void load_from_file(_pawn *pawn, _board *board)
 int main()
 {
 	int pawn_nr;
-	int i = 0; //tymczasowo robi za ID graczy
-	int moved, dice, moveable;
+	int i = 0;		//ID graczy
+	int moved, dice;
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
-	 _board *board = malloc(sizeof*board);
-	 _pawn pawns[16];
+	_board *board = malloc(sizeof*board);
+	_pawn pawns[16];
 	//do przemyslenia, wyjatkowo ³opatologiczne
 	prepare_green_road(board->road);
 
@@ -131,13 +131,13 @@ int main()
 		players[i].random = 0;
 		for (int j = 0; j < 4; j++)
 		{
-			if(i==0)
+			if (i == 0)
 				board->bases[i][j].color = 34;
-			else if(i==1)
+			else if (i == 1)
 				board->bases[i][j].color = 102;
-			else if(i==2)
+			else if (i == 2)
 				board->bases[i][j].color = 17;
-			else if(i==3)
+			else if (i == 3)
 				board->bases[i][j].color = 68;
 		}
 	}
@@ -145,12 +145,13 @@ int main()
 
 	draw_board(board, h, pawns);
 
-	int choice=2;
-	printf("1. Play\n2. Load from file");
+	int choice = 2;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	printf("1. Play.\n2. Load from file.\nChoice: ");
 	scanf("%i", &choice);
 	if (choice == 2)
 	{
-		load_from_file(pawns,board);
+		load_from_file(pawns, board);
 		for (int i = 0; i < 40; i++)
 		{
 			draw_field(board->road[i], board, h, i);
@@ -159,7 +160,7 @@ int main()
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				draw_field(board->bases[i][j],board,h,-1);
+				draw_field(board->bases[i][j], board, h, -1);
 			}
 		}
 	}
@@ -168,6 +169,7 @@ int main()
 
 	while (1)		//glowna petla gry
 	{
+		//warunek zapetlania sie ID graczy
 		if (i == 3)
 		{
 			i = 0;
@@ -176,16 +178,22 @@ int main()
 		{
 			i++;
 		}
+		if (check_if_won(&players[i], pawns) == 1)
+		{
+			continue;
+		}
 
 		//save_to_file(pawns);		//SAVE
 
 		moved = 0;
-		moveable = 0;
 		dice = throw_dice();
-		int manual = 0;
+		int manual = 0;								//MANUAL
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		gotoxy(0, 22, h);
+
+		/*printf("Dice: ");
+		scanf("%i", &dice);*/
 
 		if (manual == 1)
 		{
@@ -198,58 +206,43 @@ int main()
 		printf(", random move: %i", players[i].random);
 		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
 
-		if (dice != 7)
+
+		while (moved == 0)
 		{
-			for (int j = 0; j < 4; j++)
+			if (manual == 0)
 			{
-				if (pawns[i * 4 + j].in_base == 0)
-				{
-					moveable = 1;
-				}
+				pawn_nr = choose_pawn(&players[i], dice, board, pawns);
 			}
+			else
+			{
+				printf("\nPawn: ");
+				scanf("%i", &pawn_nr);
+			}
+			gotoxy(0, 24, h);
+			printf("\nChoosed pawn: %i", pawn_nr);
+			if (moveable(&players[i], dice, pawns) == 0)
+			{
+				break;
+			}
+			moved = move_pawn(&pawns[4 * i + pawn_nr - 1], dice, board, h, pawns, &players[i]);
 		}
 
-
-
-		if (moveable==1 || dice <=40)
-		{
-			while (moved == 0)
-			{
-				if (manual == 0)
-				{
-					pawn_nr = choose_pawn(players[i], dice, board, pawns);
-				}
-				else
-				{
-					printf("\nPawn: ");
-					scanf("%i", &pawn_nr);
-				}
-				printf("\nChoosed pawn: %i", pawn_nr);
-
-				/*if (pawns[4*i+pawn_nr-1].in_base == 1 && dice > 6)
-				{
-					printf("You cant move that pawn!");
-					continue;
-				}*/
-				gotoxy(0, 29, h);
-				printf("Wysylam tab pionkow: %p\n", &pawns);
-				move_pawn(&pawns[4*i + pawn_nr-1], dice, board, h, pawns,&players[i]);
-				moved = 1;
-			}
-		}
+		//debug
+		/*
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0);
 		for (int i = 0; i < 11; i++)
 		{
 			gotoxy(50, i, h);
 			printf("aaaaaaaaaaaaaaaaa");
 		}
-		Sleep(100);
 		for (int j = 0; j < 16; j++)
 		{
 			gotoxy(50 + pawns[j].x, pawns[j].y, h);
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), pawns[j].color);
 			printf("%i", pawns[j].id);
 		}
+		*/
+		Sleep(100);
 		clear_text(h);
 	}
 	return 0;

@@ -39,19 +39,8 @@ void pop_by_index(_pawn **head, int position)
 void push_back(_pawn **head, _pawn *pawn)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("Wstawiam w liscie pionka o adresie: %p\n", pawn);	//poki co podejrzany
 	_pawn *temp = pawn;
 	pawn->next = NULL;
-	/*temp->player = pawn->player;
-	temp->color = pawn->color;
-	temp->id = pawn->id;
-	temp->in_base = pawn->in_base;
-	temp->pos_on_road = pawn->pos_on_road;
-	temp->x = pawn->x;
-	temp->y = pawn->y;
-	temp->next = NULL;*/
-	printf("W liscie mam adres: %p\n", temp);
-
 	if (*head == NULL)
 	{
 		*head = temp;
@@ -67,102 +56,99 @@ void push_back(_pawn **head, _pawn *pawn)
 	}
 }
 
-void draw_pawn(int x, int y, int color, HANDLE h, _pawn *pawn)
+void draw_pawns(_field *field, HANDLE h)
 {
-	//zasadnicze rysowanie
-	changeConsoleColor(pawn->color);
-	for (int i = 1; i < 3; i++)
-	{
-		gotoxy(x * 4 + i, y * 2 + 1, h);
-		printf("%i", pawn->id);
-		gotoxy(x * 4 + i, y * 2, h);
-		printf("%i", pawn->id);
-	}
-	gotoxy(0, 30, h);
-}
+	int x = field->x;
+	int y = field->y;
+	int amount = field->how_many_pawns;
 
-void draw_2_pawns(int x, int y, int color, HANDLE h, _pawn *pawn)
-{
-	//zasadnicze rysowanie
-	//lewa kolumna pionka
+	if (amount == 1)
 	{
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 1, y * 2 + 1, h);
-		printf("%i", pawn->id);
-		gotoxy(x * 4 + 1, y * 2, h);
-		printf("%i", pawn->id);
+		changeConsoleColor(field->pawns->color);
+		for (int i = 1; i < 3; i++)
+		{
+			gotoxy(x * 4 + i, y * 2 + 1, h);
+			printf("%i", field->pawns->id);
+			gotoxy(x * 4 + i, y * 2, h);
+			printf("%i", field->pawns->id);
+		}
 	}
-	//prawa kolumna pionka
+	else if (amount == 2)
 	{
-		pawn = pawn->next;
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 2, y * 2 + 1, h);
-		printf("%i", pawn->id);
-		gotoxy(x * 4 + 2, y * 2, h);
-		printf("%i", pawn->id);
+		//lewa kolumna pionka
+		{
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 1, y * 2 + 1, h);
+			printf("%i", field->pawns->id);
+			gotoxy(x * 4 + 1, y * 2, h);
+			printf("%i", field->pawns->id);
+		}
+		//prawa kolumna pionka
+		{
+			field->pawns = field->pawns->next;
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 2, y * 2 + 1, h);
+			printf("%i", field->pawns->id);
+			gotoxy(x * 4 + 2, y * 2, h);
+			printf("%i", field->pawns->id);
+		}
 	}
-	gotoxy(0, 30, h);
-}
-
-void draw_3_pawns(int x, int y, int color, HANDLE h, _pawn *pawn)
-{
-	//gorny wiersz pola
+	else if (amount == 3)
 	{
-		//lewa strona (pionek 1)
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 1, y * 2, h);
-		printf("%i", pawn->id);
-		//prawa strona	(pionek 2)
-		pawn = pawn->next;
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 2, y * 2, h);
-		printf("%i", pawn->id);
+		//gorny wiersz pola
+		{
+			//lewa strona (pionek 1)
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 1, y * 2, h);
+			printf("%i", field->pawns->id);
+			//prawa strona	(pionek 2)
+			field->pawns = field->pawns->next;
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 2, y * 2, h);
+			printf("%i", field->pawns->id);
+		}
+		//dolny wiersz pola
+		{
+			//lewa strona	(pionek 3)
+			field->pawns = field->pawns->next;
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 1, y * 2 + 1, h);
+			printf("%i", field->pawns->id);;
+		}
 	}
-	//dolny wiersz pola
+	else if (amount == 4)
 	{
-		//lewa strona	(pionek 3)
-		pawn = pawn->next;
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 1, y * 2 + 1, h);
-		printf("%i", pawn->id);;
-	}
-	gotoxy(0, 30, h);
-}
-
-void draw_4_pawns(int x, int y, int color, HANDLE h, _pawn *pawn)
-{
-	//gorny wiersz pola
-	{
-		//lewa strona (pionek 1)
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 1, y * 2, h);
-		printf("%i", pawn->id);
-		//prawa strona	(pionek 2)
-		pawn = pawn->next;
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 2, y * 2, h);
-		printf("%i", pawn->id);
-	}
-	//dolny wiersz pola
-	{
-		//lewa strona	(pionek 3)
-		pawn = pawn->next;
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 1, y * 2 + 1, h);
-		printf("%i", pawn->id);
-		//prawa strona	(pionek 4)
-		pawn = pawn->next;
-		changeConsoleColor(pawn->color);
-		gotoxy(x * 4 + 2, y * 2 + 1, h);
-		printf("%i", pawn->id);
+		//gorny wiersz pola
+		{
+			//lewa strona (pionek 1)
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 1, y * 2, h);
+			printf("%i", field->pawns->id);
+			//prawa strona	(pionek 2)
+			field->pawns = field->pawns->next;
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 2, y * 2, h);
+			printf("%i", field->pawns->id);
+		}
+		//dolny wiersz pola
+		{
+			//lewa strona	(pionek 3)
+			field->pawns = field->pawns->next;
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 1, y * 2 + 1, h);
+			printf("%i", field->pawns->id);
+			//prawa strona	(pionek 4)
+			field->pawns = field->pawns->next;
+			changeConsoleColor(field->pawns->color);
+			gotoxy(x * 4 + 2, y * 2 + 1, h);
+			printf("%i", field->pawns->id);
+		}
 	}
 	gotoxy(0, 30, h);
 }
 
 void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 {
-	gotoxy(0, 34, h);
-	printf("Otrzymalem pionka o adresie: %p\n", pawn);	//wskazuje na dobrego pionka
 	pawn->in_base = 1;
 	pawn->pos_on_road = 0;
 
@@ -176,20 +162,13 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 
 void beat_enemy_pawns(_pawn *pawn, _board *board, HANDLE h)
 {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	gotoxy(0, 31, h);
-	printf("Pawn: %p\n", pawn);	//poki co podejrzany
-	printf("Board: %p\n", board->road[pawn->pos_on_road].pawns);
-	//printf("array address inside function: %p\n", **pawn);
 	int i = 0;
 	int temp2 = board->road[pawn->pos_on_road].how_many_pawns;
 	_pawn *temp = board->road[pawn->pos_on_road].pawns;
-	printf("Temp dostal adres: %p\n", temp);	//poki co podejrzany
 	for (int i = 0; i < temp2; i++)
 	{
 		if (temp->color != pawn->color)	//porownuje po kolorach, bo czemu nie
 		{
-			printf("Wysylam pionka o adresie: %p\n", temp);	//poki co podejrzany
 			return_to_base(temp, board, h);
 			pop_front(&board->road[pawn->pos_on_road].pawns);	//usuwanie wskaznika na pionek, ktory wlasnie wrocil do bazy
 			board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci pionkow na usunietym polu 
@@ -233,9 +212,7 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 		board->road[player->begin].pawns = malloc(sizeof(_pawn));		//przydzielanie pamieci
 		board->road[player->begin].pawns = NULL;
 	}
-	printf("Wstawiam do listy pionka o adresie: %p\n", pawn);	//poki co podejrzany
 	push_back(&board->road[player->begin].pawns, pawn);		//ustawiam wskaznik na nowego pionka
-	printf("W liscie mam adres: %p\n", board->road[player->begin].pawns);
 	board->road[player->begin].how_many_pawns++;		//inkrementuje ilosc pionkow na polu
 	draw_square(pawn->x, pawn->y, color, h);	//usuwam pionka z bazy
 	pawn->x = x;
@@ -245,28 +222,16 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 	{
 		beat_enemy_pawns(pawn, board, h);
 	}
-	i = board->road[player->begin].how_many_pawns;	//sprawdzam ilosc pionkow na nowym polu po zbiciu
-	if (i == 1)
-	{
-		draw_pawn(x, y, color, h, board->road[player->begin].pawns);
-	}
-	else if (i == 2)
-	{
-		draw_2_pawns(x, y, 32, h, board->road[player->begin].pawns);
-	}
-	else if (i == 3)
-	{
-		draw_3_pawns(x, y, 32, h, board->road[player->begin].pawns);
-	}
-	else if (i == 4)
-	{
-		draw_4_pawns(x, y, 32, h, board->road[player->begin].pawns);
-	}
+	draw_field(board->road[player->begin], board, h, 0);
 }
 
-void go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)
+int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)
 {
-	for (int i = 0; i < dice;i++)
+	if (pawn->on_meta == 5)
+	{
+		return 0;
+	}
+	for (int i = 0; i < dice; i++)
 	{
 		if (pawn->on_meta < 5)
 		{
@@ -299,45 +264,45 @@ void go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 			//rysowanie nowego pola
 			draw_field(board->meta[player->id][next_field], board, h, next_field);
 			//odtwarzanie starego pola
-			draw_field(board->meta[player->id][next_field - 1], board, h, next_field - 1);
+			if (next_field != 0)
+			{
+				draw_field(board->meta[player->id][next_field - 1], board, h, next_field - 1);
+			}
 			pawn->on_meta++;
 		}
 	}
+	return 1;
 }
 
-void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
+int check_if_won(_player *player, _pawn *pawns)
 {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	gotoxy(0, 30, h);
-	printf("array address inside function: %p\n", pawns);
-	//sprawdzam, czy wybrany pionek znajduje sie w bazie
-	if (pawn->in_base == 1)
+	for (int i = 0; i < 4; i++)
 	{
-		if (player->id == 0)	//pionek gracza ZIELONY
+		if (pawns[player->id * 4 + i].on_meta == 0)
 		{
-			leave_the_base(player, pawn, board, h, pawns);
-		}
-		else if (player->id == 1)	//pionek gracza ZOLTY
-		{
-			leave_the_base(player, pawn, board, h, pawns);
-		}
-		else if (player->id == 2)	//pionek gracza NIEBIESKI
-		{
-			leave_the_base(player, pawn, board, h, pawns);
-		}
-		else if (player->id == 3)	//pionek gracza CZERWONY
-		{
-			leave_the_base(player, pawn, board, h, pawns);
+			return 0;
 		}
 	}
-	else if (pawn->on_meta == 0)
+	return 1;
+}
+
+int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
+{
+	//sprawdzam, czy wybrany pionek znajduje sie w bazie, oraz czy wyrzucona zostala 6stka
+	if (pawn->in_base == 1 && dice == 6)
+	{
+		leave_the_base(player, pawn, board, h, pawns);
+		return 1;
+	}
+	//sprawdzam, czy wybrany pionek jest na mecie, czy jeszcze w drodze
+	else if (pawn->on_meta == 0 && pawn->in_base == 0)
 	{
 		int temp = pawn->pos_on_road;
 		int temp2 = temp;
 		for (int i = 0; i < dice; i++)
 		{
 			int next_field = pawn->pos_on_road + 1;
-			if ((player->begin - pawn->pos_on_road == 1 && player->id!=0) || (player->id == 0 && pawn->pos_on_road == 39))	//wchodze na mete
+			if ((player->begin - pawn->pos_on_road == 1 && player->id != 0) || (player->id == 0 && pawn->pos_on_road == 39))	//wchodze na mete
 			{
 				int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
 				pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
@@ -392,26 +357,17 @@ void move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pl
 			}
 		}
 	}
+	else if (pawn->on_meta >= 1)
+	{
+		return go_finish(pawn, dice, board, h, pawns, player);
+	}
 	else
 	{
-		go_finish(pawn, dice, board, h, pawns, player);
+		printf("You can't move that pawn!");
+		Sleep(50);
+		return 0;
 	}
-	return;
-}
 
-//zwraca numer pionka w tablicy [0-15] //po wywaleniu tego z Source.c przestalo dzialac, tutaj niby ok, ale wskaznik w mainie wskazuje na smieci, porzucam do wyjasnienia
-_pawn *find_pawn_in_array(char *player, int id, _pawn *pawns)
-{
-	for (int i = 0; i < 16; i++)
-	{
-		if (strcmp(pawns[i].player, player) == 0)
-		{
-			if (pawns[i].id == id)
-			{
-				return &pawns[i];
-			}
-		}
-	}
 }
 
 int check_if_enemy(_pawn *head, _player *player)
@@ -434,6 +390,25 @@ int check_if_enemy(_pawn *head, _player *player)
 	}
 }
 
+int moveable(_player *player, int dice, _pawn *pawns)
+{
+	if (dice != 6)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (pawns[player->id * 4 + i].in_base == 0 && pawns[player->id * 4 + i].on_meta != 5)
+			{
+				return 1;
+			}
+		}
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
 int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 {
 	//na poczatek sprawdzam, czy na wyjsciu z bazy nie stoi przecinik, ktorego moglbym zbic
@@ -441,7 +416,6 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			//if (board->pawn_ptr[board->exit_coords[player.id][0]][board->exit_coords[player.id][1]][i] != NULL)
 			if (board->road[player->begin].how_many_pawns != 0)
 			{
 				if (check_if_enemy(board->road[player->begin].pawns, player) == 1)		//na wyjsciu stoi przeciwnik, bo rozne ID graczy
@@ -465,17 +439,14 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 			_pawn toCheck = pawns[player->id * 4 + i];
 			if (toCheck.in_base == 0)			//sprawdzam, czy ten pionek jest poza baza
 			{
-				for (int j = 0; j < 4; j++)
+				if (toCheck.pos_on_road + dice > 39 && toCheck.on_meta == 0) //oznacza to, ze pionek moze wejsc do bazy, wiec go wybieram
 				{
-					if (toCheck.pos_on_road + dice > 39)
-					{
-						toCheck.pos_on_road = dice - (39 - toCheck.pos_on_road);
-					}
-					if (check_if_enemy(board->road[toCheck.pos_on_road + dice].pawns, player) == 1)
-					{
-						return i + 1;
-					}
-
+					return i + 1;	
+				}
+				//dodaje warunek toCheck.on_meta == 0, poniewaz jak pionek jest na mecie to nie bedzie nic zbijal
+				if (toCheck.on_meta == 0 && check_if_enemy(board->road[toCheck.pos_on_road + dice].pawns, player) == 1)
+				{
+					return i + 1;
 				}
 			}
 		}
