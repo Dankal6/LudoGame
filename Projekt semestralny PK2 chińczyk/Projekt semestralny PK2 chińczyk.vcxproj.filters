@@ -21,9 +21,6 @@
     <ClCompile Include="Prepare_board.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pawn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Drawing.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,15 +30,15 @@
     <ClCompile Include="Player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Prepare_road.c">
+    <ClCompile Include="Movement.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Choosing_pawn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Prepare_board.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Pawn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header.h">
@@ -56,7 +53,10 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Prepare_road.h">
+    <ClInclude Include="Movement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Choosing_pawn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

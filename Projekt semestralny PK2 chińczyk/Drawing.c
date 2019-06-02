@@ -91,20 +91,24 @@ void draw_pawns(_field *field, HANDLE h)
 	gotoxy(0, 30, h);
 }
 
-void draw_square(int x, int y, int color, HANDLE h)
+void draw_field(_field field, HANDLE h)
 {
+	int x= field.x;
+	int y= field.y;
 	for (int i = 0; i < 4; i++)
 	{
 		gotoxy(x * 4 + i, y * 2, h);
-		changeConsoleColor(color);
+		changeConsoleColor(field.color);
 		printf("%c", 219);
 		gotoxy(x * 4 + i, y * 2 + 1, h);
 		printf("%c", 219);
 	}
+	//rysowanie pionkow
+	draw_pawns(&field, h);
 	gotoxy(0, 30, h);
 }
-
-void draw_field(_field field, _board *board, HANDLE h, int i)
+/*
+void draw_field(_field field, HANDLE h)
 {
 	//rysowanie wyjsc graczy
 	int x = field.x;
@@ -163,6 +167,35 @@ void draw_field(_field field, _board *board, HANDLE h, int i)
 			}
 		}
 	}
-	//rysowanie pionkow
-	draw_pawns(&field, h);
+
+}
+*/
+void draw_bases(_board *board, HANDLE h)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			draw_field(board->bases[i][j], h);
+		}
+	}
+}
+
+void draw_goals(_board *board, HANDLE h)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			draw_field(board->meta[i][j], h);
+		}
+	}
+}
+
+void draw_road(_field *road,HANDLE h)
+{
+	for (int i = 0; i < 40; i++)
+	{
+		draw_field(road[i], h);
+	}
 }

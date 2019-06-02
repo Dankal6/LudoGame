@@ -1,5 +1,11 @@
 #pragma once
 #include "Header.h"
 
-void draw_board(struct _board*, HANDLE, _pawn[16]);
+void init_board(_board*);
+
+void prepare_bases(_board*, _pawn*);
+
+void prepare_goals(_board*);
+
+void prepare_road(_field*);
 

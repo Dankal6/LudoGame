@@ -119,22 +119,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Choosing_pawn.c" />
     <ClCompile Include="Drawing.c" />
     <ClCompile Include="List_of_pawns.c" />
-    <ClCompile Include="Pawn.c" />
+    <ClCompile Include="Movement.c" />
     <ClCompile Include="Player.c" />
     <ClCompile Include="Prepare_board.c" />
-    <ClCompile Include="Prepare_road.c" />
     <ClCompile Include="Source.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Choosing_pawn.h" />
     <ClInclude Include="Drawing.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="List_of_pawns.h" />
-    <ClInclude Include="Pawn.h" />
+    <ClInclude Include="Movement.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Prepare_board.h" />
-    <ClInclude Include="Prepare_road.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

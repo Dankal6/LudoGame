@@ -1,27 +1,19 @@
 #include "Prepare_board.h"
 
-void draw_board(_board *board, HANDLE h, _pawn pawns[16])
+void init_board(_board *board)
 {
-	//34,32 - ZIELONY ; 102,96 ZOLTY ; 68,64 CZERWONY ; 17,16 NIEBIESKI
-
-	//INICJOWANIE
-	int blue_pawn = 1, green_pawn = 1, yellow_pawn = 1, red_pawn = 1;
-	char cgreen_pawn[7];
-	char cred_pawn[7];
-	char cblue_pawn[7];
-	char cyellow_pawn[7];
-
 	//wyjscia z baz
 	board->exits[0].x = 0; board->exits[0].y = 4; board->exits[0].color = 34;
 	board->exits[1].x = 6; board->exits[1].y = 0; board->exits[1].color = 102;
 	board->exits[2].x = 10; board->exits[2].y = 6; board->exits[2].color = 17;
 	board->exits[3].x = 4; board->exits[3].y = 10; board->exits[3].color = 68;
-
-	//kolory baz
+	//kolory baz i ilosci pionkow na wyjsciach + mety
 	for (int i = 0; i < 4; i++)
 	{
+		board->exits[i].how_many_pawns = 0;
 		for (int j = 0; j < 4; j++)
 		{
+			board->meta[i][j].how_many_pawns = 0;
 			if (i == 0)
 				board->bases[i][j].color = 34;
 			else if (i == 1)
@@ -33,131 +25,19 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 		}
 	}
 
-	//char (*board)[11][11][10];
-	int i = 4, j;
-	int white = 1;
-	int licznik = 0;
-
 	for (int i = 0; i < 40; i++)
 	{
 		board->road[i].how_many_pawns = 0;
 	}
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			board->meta[i][j].how_many_pawns = 0;
-		}
-		board->exits[i].how_many_pawns = 0;
-	}
 
-	//RYSOWANIE
-#pragma region pas_poziomy
-	int k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza niebieskiego
-	for (int j = 0; j < 11; j++)
-	{
-		if (white == 1)
-		{
-			draw_square(j, i, 255, h);
-			draw_square(j, i + 2, 255, h);
-			white = 0;
-		}
-		else if (white == 0)
-		{
-			draw_square(j, i, 119, h);
-			draw_square(j, i + 2, 119, h);
-			white = 1;
-		}
-		if (j == 0 || j == 10)
-		{
-			if (j == 0)
-			{
-				draw_square(j, i, 34, h); //WYJSCIE Z BAZY ZIELONEGO
-			}
-			else
-			{
-				draw_square(j, i + 2, 17, h); //WYJSCIE Z BAZY NIEBIESKIEGO
-			}
-			draw_square(j, i + 1, 119, h);
-		}
-		else if (j > 0 && j < 5)
-		{
-			draw_square(j, i + 1, 34, h);	//META ZIELONEGO
-			board->meta[0][j - 1].x = j;
-			board->meta[0][j - 1].y = i + 1;
-		}
-		else if (j < 10 && j>5)
-		{
-			draw_square(j, i + 1, 17, h);	//META NIEBIESKIEGO
-			board->meta[2][j-6].x = k;
-			board->meta[2][j-6].y = i + 1;
-			k--;
-		}
-	}
 
-#pragma endregion
-	white = 1;
-#pragma region pas_pionowy_+_bazy
-	k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza czerwonego
+}
+
+void prepare_bases(_board *board, _pawn *pawns)
+{
+	int blue_pawn = 1, green_pawn = 1, yellow_pawn = 1, red_pawn = 1;
 	for (int i = 0; i < 11; i++)
 	{
-		for (int j = 4; j < 7; j++)
-		{
-			if (i == 0 && j == 6) //WYJSCIE Z BAZY ZOLTEGO
-			{
-				draw_square(j, i, 102, h);
-				white = 0;
-				continue;
-			}
-			if (i == 10 && j == 4)
-			{
-				draw_square(j, i, 68, h); //WYJSCIE Z BAZY CZERWONEGO
-				white = 0;
-				continue;
-			}
-			if (white == 1)
-			{
-				draw_square(j, i, 255, h);
-				white = 0;
-			}
-			else if (white == 0)
-			{
-				draw_square(j, i, 119, h);
-				white = 1;
-			}
-			if (i > 0 && i < 5)
-			{
-				if (j > 4 && j < 6)
-				{
-					draw_square(j, i, 102, h);	//META ZOLTEGO
-					board->meta[1][i - 1].x = j;
-					board->meta[1][i - 1].y = i;
-					continue;
-				}
-			}
-			else if (i > 5 && i < 10)
-			{
-				if (j > 4 && j < 6)
-				{
-					draw_square(j, i, 68, h);	//META CZERWONEGO
-					board->meta[3][i - 6].x = j;
-					board->meta[3][i - 6].y = k;
-					k--;
-					continue;
-				}
-			}
-			else if (j < 5 && (i == 5))
-			{
-				draw_square(j, i, 34, h); //META ZIELONEGO
-				continue;
-			}
-			else if (j > 5 && (i == 5))
-			{
-				draw_square(j, i, 17, h);	//META NIEBIESKIEGO
-				continue;
-			}
-		}
-		//BAZY
 		for (int j = 0; j < 11; j++)
 		{
 
@@ -165,8 +45,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 			{
 				if (j < 2)
 				{
-					draw_square(j, i, 34, h); //ZIELONY
-
 					pawns[green_pawn - 1].id = green_pawn;
 					pawns[green_pawn - 1].color = 32;
 					pawns[green_pawn - 1].player = 0;
@@ -185,17 +63,11 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[0][green_pawn - 1].y = i;
 					board->bases[0][green_pawn - 1].how_many_pawns = 1;
 
-					draw_pawns(board->bases[0][green_pawn - 1], h);
-
-
 					green_pawn++;
 					continue;
 				}
 				if (j > 8)
 				{
-
-					draw_square(j, i, 102, h);	//ZOLTY
-
 					pawns[yellow_pawn + 3].player = 1;
 					pawns[yellow_pawn + 3].color = 96;
 					pawns[yellow_pawn + 3].id = yellow_pawn;
@@ -213,8 +85,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[1][yellow_pawn - 1].y = i;
 					board->bases[1][yellow_pawn - 1].how_many_pawns = 1;
 
-					draw_pawns(board->bases[1][yellow_pawn - 1], h);
-
 					yellow_pawn++;
 					continue;
 				}
@@ -223,8 +93,6 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 			{
 				if (j < 2)
 				{
-					draw_square(j, i, 68, h);	//CZERWONY
-
 					pawns[red_pawn + 11].player = 3;
 					pawns[red_pawn + 11].color = 64;
 					pawns[red_pawn + 11].id = red_pawn;
@@ -242,18 +110,12 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[3][red_pawn - 1].y = i;
 					board->bases[3][red_pawn - 1].how_many_pawns = 1;
 
-					draw_pawns(board->bases[3][red_pawn - 1], h);
-
-
 					red_pawn++;
 					continue;
 
 				}
 				if (j > 8)
 				{
-
-					draw_square(j, i, 17, h);	//NIEBIESKI
-
 					pawns[blue_pawn + 7].player = 2;
 					pawns[blue_pawn + 7].id = blue_pawn;
 					pawns[blue_pawn + 7].color = 16;
@@ -271,16 +133,113 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 					board->bases[2][blue_pawn - 1].y = i;
 					board->bases[2][blue_pawn - 1].how_many_pawns = 1;
 
-					draw_pawns(board->bases[2][blue_pawn - 1], h);
-
-
 					blue_pawn++;
 					continue;
 				}
 			}
 		}
 	}
-#pragma endregion 
+}
 
+void prepare_goals(_board *board)
+{
+	int k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza czerwonego
+	for (int i = 0; i < 4; i++)
+	{
+		//META ZIELONEGO
+		board->meta[0][i].x = i + 1;
+		board->meta[0][i].y = 5;
+		board->meta[0][i].color = 34;
+		//META NIEBIESKIEGO
+		board->meta[2][i].x = k;
+		board->meta[2][i].y = 5;
+		board->meta[2][i].color = 17;
+		//META ZOLTEGO
+		board->meta[1][i].x = 5;
+		board->meta[1][i].y = i + 1;
+		board->meta[1][i].color = 102;
+		//META CZERWONEGO
+		board->meta[3][i].x = 5;
+		board->meta[3][i].y = k;
+		board->meta[3][i].color = 68;
+		k--;
+	}
+}
+
+void prepare_road(_field *road)
+{
+	int i, j = 0;
+	for (i = 0; i < 5; i++)
+	{
+		road[j].y = 4;
+		road[j].x = i;
+		j++;
+	}
+	for (i = 3; i >= 0; i--)
+	{
+		road[j].x = 4;
+		road[j].y = i;
+		j++;
+	}
+	road[j].y = 0;
+	road[j].x = 5;
+	j++;
+	for (i = 0; i < 5; i++)
+	{
+		road[j].x = 6;
+		road[j].y = i;
+		j++;
+	}
+	for (i = 0; i < 4; i++)
+	{
+		road[j].y = 4;
+		road[j].x = i + 7;
+		j++;
+	}
+	road[j].y = 5;
+	road[j].x = 10;
+	j++;
+	for (i = 10; i >= 6; i--)
+	{
+		road[j].y = 6;
+		road[j].x = i;
+		j++;
+	}
+	for (i = 7; i < 11; i++)
+	{
+		road[j].x = 6;
+		road[j].y = i;
+		j++;
+	}
+	road[j].y = 10;
+	road[j].x = 5;
+	j++;
+	for (i = 10; i >= 6; i--)
+	{
+		road[j].x = 4;
+		road[j].y = i;
+		j++;
+	}
+	for (i = 3; i >= 0; i--)
+	{
+		road[j].y = 6;
+		road[j].x = i;
+		j++;
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		road[j].y = 5;
+		road[j].x = i;
+		j++;
+	}
+	//kolory + wskaznik na NULL
+	for (j = 0; j < 40; j++)
+	{
+		road[j].pawns = NULL;
+		if (j % 2 == 1)
+			road[j].color = 119;
+		else
+			road[j].color = 255;
+	}
 }
 

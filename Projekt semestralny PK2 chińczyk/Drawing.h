@@ -3,6 +3,10 @@
 
 void draw_pawns(_field, HANDLE);
 
-void draw_square(int, int, int, HANDLE);
+void draw_field(_field, HANDLE);
 
-void draw_field(_field field, _board*, HANDLE, int);
+void draw_bases(_board*, HANDLE h);
+
+void draw_goals(_board*, HANDLE h);
+
+void draw_raod(_field*, HANDLE);

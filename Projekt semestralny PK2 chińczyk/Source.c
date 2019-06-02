@@ -107,15 +107,22 @@ int main()
 	int i = 0;		//ID graczy
 	int moved, dice;
 	HANDLE h;
+	h = GetStdHandle(STD_OUTPUT_HANDLE);
 	_pawn pawns[16];
 	_board *board = malloc(sizeof(_board));
 	_player players[4];
 
-	h = GetStdHandle(STD_OUTPUT_HANDLE);
+
 	prepare_road(board->road);
 	init(players);
 
-	draw_board(board, h, pawns);	//koniecznie trzeba tam posprzatac
+	init_board(board);
+	prepare_bases(board, pawns);
+	draw_bases(board, h);
+	prepare_goals(board);
+	draw_goals(board, h);
+	prepare_road(board->road);
+	draw_road(board->road,h);
 
 	int choice;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);	//ustawia kolor na czarne tlo i biala czcionke
