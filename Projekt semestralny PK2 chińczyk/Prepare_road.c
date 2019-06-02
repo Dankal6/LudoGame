@@ -1,6 +1,6 @@
-#include "Roads.h"
+#include "Prepare_road.h"
 
-void prepare_green_road(_field road[40])
+void prepare_road(_field *road)
 {
 	int i, j = 0;
 	for (i = 0; i < 5; i++)

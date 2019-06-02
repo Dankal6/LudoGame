@@ -2,6 +2,8 @@
 
 void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 {
+	//34,32 - ZIELONY ; 102,96 ZOLTY ; 68,64 CZERWONY ; 17,16 NIEBIESKI
+
 	//INICJOWANIE
 	int blue_pawn = 1, green_pawn = 1, yellow_pawn = 1, red_pawn = 1;
 	char cgreen_pawn[7];
@@ -14,6 +16,22 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 	board->exits[1].x = 6; board->exits[1].y = 0; board->exits[1].color = 102;
 	board->exits[2].x = 10; board->exits[2].y = 6; board->exits[2].color = 17;
 	board->exits[3].x = 4; board->exits[3].y = 10; board->exits[3].color = 68;
+
+	//kolory baz
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (i == 0)
+				board->bases[i][j].color = 34;
+			else if (i == 1)
+				board->bases[i][j].color = 102;
+			else if (i == 2)
+				board->bases[i][j].color = 17;
+			else if (i == 3)
+				board->bases[i][j].color = 68;
+		}
+	}
 
 	//char (*board)[11][11][10];
 	int i = 4, j;
@@ -266,78 +284,3 @@ void draw_board(_board *board, HANDLE h, _pawn pawns[16])
 
 }
 
-void draw_square(int x, int y, int color, HANDLE h)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		gotoxy(x * 4 + i, y * 2, h);
-		changeConsoleColor(color);
-		printf("%c", 219);
-		gotoxy(x * 4 + i, y * 2 + 1, h);
-		printf("%c", 219);
-	}
-	gotoxy(0, 30, h);
-}
-
-void draw_field(_field field, _board *board, HANDLE h, int i)
-{
-	//rysowanie wyjsc graczy
-	int x = field.x;
-	int y = field.y;
-	if (x == board->exits[0].x && y == board->exits[0].y)
-	{
-		draw_square(x, y, 34, h);
-	}
-	else if (x == board->exits[1].x && y == board->exits[1].y)
-	{
-		draw_square(x, y, 102, h);
-	}
-	else if (x == board->exits[2].x && y == board->exits[2].y)
-	{
-		draw_square(x, y, 17, h);
-	}
-	else if (x == board->exits[3].x && y == board->exits[3].y)
-	{
-		draw_square(x, y, 68, h);
-	}
-	//rysowanie pol bialo-szarych
-	else
-	{
-		if (i == -1)		//gdy pionek wraca po zbiciu do bazy i=-1 i nie rysuje pol bialo-szarych
-		{
-			draw_square(x, y, field.color, h);
-		}
-		else
-		{
-			if (i % 2 == 1)
-			{
-				draw_square(x, y, 119, h);
-			}
-			else
-			{
-				draw_square(x, y, 255, h);
-			}
-		}
-	}
-	//rysowanie mety graczy
-	int it, j;
-	for (it = 0; it < 4; it++)
-	{
-		for (j = 0; j < 4; j++)
-		{
-			if (x == board->meta[it][j].x && y == board->meta[it][j].y)
-			{
-				if (it == 0)
-					draw_square(x, y, 34, h);
-				else if (it == 1)
-					draw_square(x, y, 102, h);
-				else if (it == 2)
-					draw_square(x, y, 17, h);
-				else if (it == 3)
-					draw_square(x, y, 68, h);
-			}
-		}
-	}
-	//rysowanie pionkow
-	draw_pawns(field, h);
-}

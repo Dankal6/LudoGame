@@ -107,46 +107,18 @@ int main()
 	int i = 0;		//ID graczy
 	int moved, dice;
 	HANDLE h;
-	h = GetStdHandle(STD_OUTPUT_HANDLE);
-	_board *board = malloc(sizeof*board);
 	_pawn pawns[16];
-	//do przemyslenia, wyjatkowo ³opatologiczne
-	prepare_green_road(board->road);
-
-	//prepare_board_of_ptr(board);
-
+	_board *board = malloc(sizeof(_board));
 	_player players[4];
-	strcpy(players[0].name, "green");
-	strcpy(players[1].name, "yellow");
-	strcpy(players[2].name, "blue");
-	strcpy(players[3].name, "red");
-	players[0].begin = 0;
-	players[1].begin = 10;
-	players[2].begin = 20;
-	players[3].begin = 30;
 
-	for (int i = 0; i < 4; i++)
-	{
-		players[i].id = i;
-		players[i].random = 0;
-		for (int j = 0; j < 4; j++)
-		{
-			if (i == 0)
-				board->bases[i][j].color = 34;
-			else if (i == 1)
-				board->bases[i][j].color = 102;
-			else if (i == 2)
-				board->bases[i][j].color = 17;
-			else if (i == 3)
-				board->bases[i][j].color = 68;
-		}
-	}
-	//34,32 - ZIELONY ; 102,96 ZOLTY ; 68,64 CZERWONY ; 17,16 NIEBIESKI
+	h = GetStdHandle(STD_OUTPUT_HANDLE);
+	prepare_road(board->road);
+	init(players);
 
-	draw_board(board, h, pawns);
+	draw_board(board, h, pawns);	//koniecznie trzeba tam posprzatac
 
-	int choice = 2;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	int choice;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);	//ustawia kolor na czarne tlo i biala czcionke
 	printf("1. Play.\n2. Load from file.\nChoice: ");
 	scanf("%i", &choice);
 	if (choice == 2)
@@ -165,24 +137,8 @@ int main()
 		}
 	}
 
-	i = -1;
-
 	while (1)		//glowna petla gry
 	{
-		//warunek zapetlania sie ID graczy
-		if (i == 3)
-		{
-			i = 0;
-		}
-		else
-		{
-			i++;
-		}
-		if (check_if_won(&players[i], pawns) == 1)
-		{
-			continue;
-		}
-
 		//save_to_file(pawns);		//SAVE
 
 		moved = 0;
@@ -244,6 +200,21 @@ int main()
 		*/
 		Sleep(100);
 		clear_text(h);
+
+		//warunek zapetlania sie ID graczy
+		if (i == 3)
+		{
+			i = 0;
+		}
+		else
+		{
+			i++;
+		}
+		if (check_if_won(&players[i], pawns) == 1)
+		{
+			continue;
+		}
 	}
+	free(board);
 	return 0;
 }
