@@ -106,26 +106,34 @@ int main()
 	int pawn_nr;
 	int i = 0;		//ID graczy
 	int moved, dice;
+	int num_of_players;
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
-	_pawn pawns[16];
-	_board *board = malloc(sizeof(_board));
-	_player players[4];
 
+	_board *board = malloc(sizeof(_board));
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);	//ustawia kolor na czarne tlo i biala czcionke
+	printf("How many players? ");
+	scanf("%i", &num_of_players);
+
+	_pawn *pawns = malloc((num_of_players*4) * sizeof(_pawn));
+	_player *players = malloc(num_of_players * sizeof(_player));
+
+	prepare_bases(board, pawns);
+	init(players,num_of_players);
 
 	prepare_road(board->road);
-	init(players);
-
 	init_board(board);
-	prepare_bases(board, pawns);
 	draw_bases(board, h);
 	prepare_goals(board);
 	draw_goals(board, h);
 	prepare_road(board->road);
-	draw_road(board->road,h);
+	draw_road(board->road, h);
+
 
 	int choice;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);	//ustawia kolor na czarne tlo i biala czcionke
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	printf("1. Play.\n2. Load from file.\nChoice: ");
 	scanf("%i", &choice);
 	if (choice == 2)
@@ -209,7 +217,7 @@ int main()
 		clear_text(h);
 
 		//warunek zapetlania sie ID graczy
-		if (i == 3)
+		if (i == num_of_players-1)
 		{
 			i = 0;
 		}
@@ -217,11 +225,13 @@ int main()
 		{
 			i++;
 		}
-		if (check_if_won(&players[i], pawns) == 1)
+		if (check_if_won(&players[i], pawns, num_of_players) == 1)
 		{
 			continue;
 		}
 	}
+	free(players);
+	free(pawns);
 	free(board);
 	return 0;
 }

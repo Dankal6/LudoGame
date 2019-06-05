@@ -16,7 +16,7 @@ typedef struct {
 }_road;
 
 typedef struct {
-	char name[7];	//mozna by dynamicznie, do ewentualnej poprawki
+	char *name;
 	int id;
 	int random;
 	int begin;
