@@ -10,3 +10,5 @@ void draw_bases(_board*, HANDLE h);
 void draw_goals(_board*, HANDLE h);
 
 void draw_raod(_field*, HANDLE);
+
+void draw_exits(_field*, HANDLE);

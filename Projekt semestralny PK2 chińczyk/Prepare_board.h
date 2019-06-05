@@ -3,7 +3,7 @@
 
 void init_board(_board*);
 
-void prepare_bases(_board*, _pawn*);
+void prepare_bases(_board*, _pawn*, int);
 
 void prepare_goals(_board*);
 

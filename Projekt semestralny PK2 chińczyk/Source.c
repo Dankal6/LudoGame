@@ -119,7 +119,7 @@ int main()
 	_pawn *pawns = malloc((num_of_players*4) * sizeof(_pawn));
 	_player *players = malloc(num_of_players * sizeof(_player));
 
-	prepare_bases(board, pawns);
+	prepare_bases(board, pawns, num_of_players);
 	init(players,num_of_players);
 
 	prepare_road(board->road);
@@ -129,6 +129,7 @@ int main()
 	draw_goals(board, h);
 	prepare_road(board->road);
 	draw_road(board->road, h);
+	draw_exits(board->exits, h);
 
 
 	int choice;

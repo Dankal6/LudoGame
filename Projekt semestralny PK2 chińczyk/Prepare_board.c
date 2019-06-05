@@ -33,7 +33,7 @@ void init_board(_board *board)
 
 }
 
-void prepare_bases(_board *board, _pawn *pawns)
+void prepare_bases(_board *board, _pawn *pawns,int num_of_players)
 {
 	int blue_pawn = 1, green_pawn = 1, yellow_pawn = 1, red_pawn = 1;
 	for (int i = 0; i < 11; i++)
@@ -58,7 +58,6 @@ void prepare_bases(_board *board, _pawn *pawns)
 					board->bases[0][green_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[0][green_pawn - 1].pawns = NULL;
 					push_back(&board->bases[0][green_pawn - 1].pawns, &pawns[green_pawn - 1]);
-
 					board->bases[0][green_pawn - 1].x = j;
 					board->bases[0][green_pawn - 1].y = i;
 					board->bases[0][green_pawn - 1].how_many_pawns = 1;
@@ -91,7 +90,7 @@ void prepare_bases(_board *board, _pawn *pawns)
 			}
 			if (i > 8)
 			{
-				if (j < 2)
+				if (j < 2 && num_of_players>3)
 				{
 					pawns[red_pawn + 11].player = 3;
 					pawns[red_pawn + 11].color = 64;
@@ -114,7 +113,7 @@ void prepare_bases(_board *board, _pawn *pawns)
 					continue;
 
 				}
-				if (j > 8)
+				if (j > 8 && num_of_players>2)
 				{
 					pawns[blue_pawn + 7].player = 2;
 					pawns[blue_pawn + 7].id = blue_pawn;
@@ -226,12 +225,9 @@ void prepare_road(_field *road)
 		road[j].x = i;
 		j++;
 	}
-	for (int i = 0; i < 5; i++)
-	{
-		road[j].y = 5;
-		road[j].x = i;
-		j++;
-	}
+	road[j].y = 5;
+	road[j].x = 0;
+
 	//kolory + wskaznik na NULL
 	for (j = 0; j < 40; j++)
 	{
