@@ -119,20 +119,9 @@ void draw_bases(_board *board, HANDLE h)
 	}
 }
 
-void draw_goals(_board *board, HANDLE h)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			draw_field(board->meta[i][j], h);
-		}
-	}
-}
-
 void draw_road(_field *road,HANDLE h)
 {
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < 56; i++)
 	{
 		draw_field(road[i], h);
 	}
@@ -161,7 +150,6 @@ void draw_the_center(HANDLE h)
 void draw_board(_board *board, HANDLE h)
 {
 	draw_bases(board, h);
-	draw_goals(board, h);
 	draw_road(board->road, h);
 	draw_exits(board->exits, h);
 	draw_the_center(h);

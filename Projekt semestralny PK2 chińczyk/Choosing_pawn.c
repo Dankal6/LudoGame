@@ -32,13 +32,17 @@ int check_if_enemy(_pawn *head, _player *player)
 	}
 }
 
-int moveable(_player *player, int dice, _pawn *pawns)
+int moveable(_player *player, int dice, _pawn *pawns, _board *board)
 {
 	if (dice != 6)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (pawns[player->id * 4 + i].in_base == 0 && pawns[player->id * 4 + i].on_meta != 5)
+			if (pawns[player->id * 4 + i].distance + dice < 41 && pawns[player->id * 4 + i].in_base == 0)
+			{
+				return 1;
+			}
+			if (pawns[player->id * 4 + i].distance + dice >= 41 && pawns[player->id * 4 + i].distance + dice < 45 && board->road[pawns[player->id * 4 + i].distance + (4 * pawns[player->id * 4 + i].player) + dice - 1].pawns == NULL)
 			{
 				return 1;
 			}
@@ -49,13 +53,17 @@ int moveable(_player *player, int dice, _pawn *pawns)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (pawns[player->id * 4 + i].on_meta != 5)
+			if (pawns[player->id * 4 + i].distance + dice < 41)
+			{
+				return 1;
+			}
+			if (pawns[player->id * 4 + i].distance + dice >= 41 && pawns[player->id * 4 + i].distance + dice < 45 && board->road[pawns[player->id * 4 + i].distance + (4 * pawns[player->id * 4 + i].player) + dice - 1].pawns == NULL)
 			{
 				return 1;
 			}
 		}
+		return 0;
 	}
-	return 0;
 }
 
 int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
@@ -88,12 +96,12 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 			_pawn toCheck = pawns[player->id * 4 + i];
 			if (toCheck.in_base == 0)			//sprawdzam, czy ten pionek jest poza baza
 			{
-				if (toCheck.pos_on_road + dice > 39 && toCheck.on_meta == 0) //oznacza to, ze pionek moze wejsc do bazy, wiec go wybieram
+				if (toCheck.distance + dice > 39 && toCheck.distance + dice < 44 && board->road[pawns[player->id * 4 + i].distance + (4 * pawns[player->id * 4 + i].player) + dice - 1].pawns == NULL) //oznacza to, ze pionek moze wejsc do bazy, wiec go wybieram
 				{
 					return i + 1;
 				}
-				//dodaje warunek toCheck.on_meta == 0, poniewaz jak pionek jest na mecie to nie bedzie nic zbijal
-				if (toCheck.on_meta == 0 && check_if_enemy(board->road[toCheck.pos_on_road + dice].pawns, player) == 1)
+				//dodaje warunek toCheck.distance + dice < 41, poniewaz jak pionek jest na mecie to nie bedzie nic zbijal
+				if (toCheck.distance + dice < 41 && check_if_enemy(board->road[toCheck.pos_on_road + dice].pawns, player) == 1)
 				{
 					return i + 1;
 				}

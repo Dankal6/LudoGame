@@ -20,6 +20,7 @@ typedef struct{
 	int id;		//id pionka, wartosc 1-4
 	int x, y;	//wspolrzedne na planszy
 	int pos_on_road;	//pozycja na trasie, 0-39
+	int distance;		//dystans od poczatku
 	int in_base;	//informacja o tym, czy pionek jest w bazie, 0-1
 	int on_meta;	//informacja o tym, czy pionek jest na mecie, 0-4
 	int color;		//przechowuje kolor pionka
@@ -32,8 +33,8 @@ typedef struct {
 }_field;
 
 typedef struct {	
-	_field road[40];	
+	_field *road;	
 	_field exits[4];
 	_field bases[4][4];
-	_field meta[4][4];
+	//_field meta[4][4];	//testowo przerzucam do road[56]
 }_board;

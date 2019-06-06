@@ -1,6 +1,6 @@
 #include "Prepare_board.h"
 
-void init_board(_board *board)
+void init_board(_board *board, int num_of_players)
 {
 	//wyjscia z baz
 	board->exits[0].x = 0; board->exits[0].y = 4; board->exits[0].color = 34;
@@ -13,7 +13,6 @@ void init_board(_board *board)
 		board->exits[i].how_many_pawns = 0;
 		for (int j = 0; j < 4; j++)
 		{
-			board->meta[i][j].how_many_pawns = 0;
 			if (i == 0)
 				board->bases[i][j].color = 34;
 			else if (i == 1)
@@ -24,14 +23,8 @@ void init_board(_board *board)
 				board->bases[i][j].color = 68;
 		}
 	}
-
-	for (int i = 0; i < 40; i++)
-	{
-		board->road[i].how_many_pawns = 0;
-	}
-	prepare_road(board->road);
-	prepare_goals(board);
-	prepare_road(board->road);
+	board->road = malloc(40 + (num_of_players * 4) * sizeof(_field));
+	prepare_road(board->road, num_of_players);
 }
 
 void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
@@ -54,6 +47,7 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 					pawns[green_pawn - 1].in_base = 1;
 					pawns[green_pawn - 1].pos_on_road = 0;
 					pawns[green_pawn - 1].on_meta = 0;
+					pawns[green_pawn - 1].distance = 0;
 					pawns[green_pawn - 1].next = NULL;
 
 					board->bases[0][green_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -76,6 +70,7 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 					pawns[yellow_pawn + 3].in_base = 1;
 					pawns[yellow_pawn + 3].pos_on_road = 0;
 					pawns[yellow_pawn + 3].on_meta = 0;
+					pawns[yellow_pawn + 3].distance = 0;
 					pawns[yellow_pawn + 3].next = NULL;
 
 					board->bases[1][yellow_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -99,6 +94,7 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 					pawns[red_pawn + 11].x = j;
 					pawns[red_pawn + 11].y = i;
 					pawns[red_pawn + 11].in_base = 1;
+					pawns[red_pawn + 11].distance = 0;
 					pawns[red_pawn + 11].pos_on_road = 0;
 					pawns[red_pawn + 11].on_meta = 0;
 					pawns[red_pawn + 11].next = NULL;
@@ -124,6 +120,7 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 					pawns[blue_pawn + 7].in_base = 1;
 					pawns[blue_pawn + 7].pos_on_road = 0;
 					pawns[blue_pawn + 7].on_meta = 0;
+					pawns[blue_pawn + 7].distance = 0;
 					pawns[blue_pawn + 7].next = NULL;
 
 					board->bases[2][blue_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
@@ -141,32 +138,7 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 	}
 }
 
-void prepare_goals(_board *board)
-{
-	int k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza czerwonego
-	for (int i = 0; i < 4; i++)
-	{
-		//META ZIELONEGO
-		board->meta[0][i].x = i + 1;
-		board->meta[0][i].y = 5;
-		board->meta[0][i].color = 34;
-		//META NIEBIESKIEGO
-		board->meta[2][i].x = k;
-		board->meta[2][i].y = 5;
-		board->meta[2][i].color = 17;
-		//META ZOLTEGO
-		board->meta[1][i].x = 5;
-		board->meta[1][i].y = i + 1;
-		board->meta[1][i].color = 102;
-		//META CZERWONEGO
-		board->meta[3][i].x = 5;
-		board->meta[3][i].y = k;
-		board->meta[3][i].color = 68;
-		k--;
-	}
-}
-
-void prepare_road(_field *road)
+void prepare_road(_field *road, int num_of_players)
 {
 	int i, j = 0;
 	for (i = 0; i < 5; i++)
@@ -229,10 +201,9 @@ void prepare_road(_field *road)
 	road[j].y = 5;
 	road[j].x = 0;
 
-	//kolory + wskaznik na NULL
+	//kolory
 	for (j = 0; j < 40; j++)
 	{
-		road[j].pawns = NULL;
 		if (j % 2 == 1)
 			road[j].color = 119;
 		else
@@ -243,5 +214,32 @@ void prepare_road(_field *road)
 	road[10].color = 102;
 	road[20].color = 17;
 	road[30].color = 68;
+
+	int k = 9;	//potrzebny do nadania wspolrzednych polom mety gracza czerwonego
+	for (int i = 0; i < 4; i++)
+	{
+		//META ZIELONEGO
+		road[40 + i].x = i + 1;
+		road[40 + i].y = 5;
+		road[40 + i].color = 34;
+		//META ZOLTEGO
+		road[44 + i].x = 5;
+		road[44 + i].y = i + 1;
+		road[44 + i].color = 102;
+		//META NIEBIESKIEGO
+		road[48 + i].x = k;
+		road[48 + i].y = 5;
+		road[48 + i].color = 17;
+		//META CZERWONEGO
+		road[52 + i].x = 5;
+		road[52 + i].y = k;
+		road[52 + i].color = 68;
+		k--;
+	}
+	for (int i = 0; i < 56; i++)
+	{
+		road[i].pawns = NULL;
+		road[i].how_many_pawns = 0;
+	}
 }
 
