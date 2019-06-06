@@ -125,6 +125,7 @@
     <ClCompile Include="Movement.c" />
     <ClCompile Include="Player.c" />
     <ClCompile Include="Prepare_board.c" />
+    <ClCompile Include="Save_load.c" />
     <ClCompile Include="Source.c" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +136,7 @@
     <ClInclude Include="Movement.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Prepare_board.h" />
+    <ClInclude Include="Save_load.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

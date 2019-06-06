@@ -36,6 +36,9 @@
     <ClCompile Include="Choosing_pawn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Save_load.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Prepare_board.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Choosing_pawn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Save_load.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

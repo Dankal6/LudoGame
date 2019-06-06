@@ -1,8 +1,8 @@
 #include "Choosing_pawn.h"
 
-int check_if_won(_player *player, _pawn *pawns, int num_of_players)
+int check_if_won(_player *player, _pawn *pawns)
 {
-	for (int i = 0; i < num_of_players; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (pawns[player->id * 4 + i].on_meta == 0)
 		{

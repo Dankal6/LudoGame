@@ -1,5 +1,12 @@
 #include "Movement.h"
 
+int throw_dice()
+{
+	srand(time(NULL));
+	int dice = ((rand() % 6) + 1);
+	return dice;
+}
+
 int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
 {
 	//sprawdzam, czy wybrany pionek znajduje sie w bazie, oraz czy wyrzucona zostala 6stka
@@ -18,13 +25,12 @@ int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			int next_field = pawn->pos_on_road + 1;
 			if ((player->begin - pawn->pos_on_road == 1 && player->id != 0) || (player->id == 0 && pawn->pos_on_road == 39))	//wchodze na mete
 			{
-				int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
-				pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
+				int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);	
+				pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);	//usuwanie z pola przed meta
 				board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
 				pawn->on_meta = 1;
-				draw_field(board->road[next_field - 1], h);
-				go_finish(pawn, dice - i, board, h, pawns, player);
-				return;
+				draw_field(board->road[next_field - 1], h);		//rysowanie pola przed meta juz bez pionka
+				return go_finish(pawn, dice - i, board, h, pawns, player);
 			}
 			if (next_field == 40)
 			{
@@ -158,15 +164,12 @@ int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 		if (pawn->on_meta < 5)
 		{
 			int next_field = pawn->on_meta - 1;
-			int x = board->meta[player->id][next_field].x;
-			int y = board->meta[player->id][next_field].y;
+			pawn->x = board->meta[player->id][next_field].x;
+			pawn->y = board->meta[player->id][next_field].y;
 
 			int pawns = board->meta[player->id][next_field].how_many_pawns;
 			if (pawns == 0)
-			{
-				//board->meta[player->id][next_field].pawns = malloc(sizeof(_pawn));		//przydzielanie pamieci
 				board->meta[player->id][next_field].pawns = NULL;
-			}
 
 			if (pawn->on_meta >= 2)
 			{
@@ -176,12 +179,8 @@ int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			}
 
 			push_back(&board->meta[player->id][next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
-
-
 			board->meta[player->id][next_field].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
 
-			pawn->x = x;
-			pawn->y = y;
 			Sleep(50);
 			//rysowanie nowego pola
 			draw_field(board->meta[player->id][next_field], h);

@@ -7,31 +7,23 @@
 #include <time.h>
 
 typedef struct {
-	int x;
-	int y;
-	/*_road *next;
-	_road *prev;
-	_road *head;
-	_road *tail;*/
-}_road;
-
-typedef struct {
-	char *name;
-	int id;
-	int random;
-	int begin;
-	int won;
+	char *name;	//nazwa gracza: green, yellow, blue, red
+	int id;		//id gracza 0-3;
+	int random;	//informacja o tym, czy komputer wykonuje losowy ruch
+	int begin;	//miejsce rozpoczecia na planszy
+	int won;	//informacja o tym, czy gracz jest 4 pionkami na mecie, 0-1
+	int place;	//informacja o kolejnosci konczenia gry, miejscu
 }_player;
 
 typedef struct{
-	int player;
-	int id;
-	int x, y;
-	int pos_on_road;
-	int in_base;
-	int on_meta;
-	int color;
-	struct _pawn *next;
+	int player;	//odpowiednik ID z _player, 0-3
+	int id;		//id pionka, wartosc 1-4
+	int x, y;	//wspolrzedne na planszy
+	int pos_on_road;	//pozycja na trasie, 0-39
+	int in_base;	//informacja o tym, czy pionek jest w bazie, 0-1
+	int on_meta;	//informacja o tym, czy pionek jest na mecie, 0-4
+	int color;		//przechowuje kolor pionka
+	struct _pawn *next;	//przechowuje wskaznik na nastepnego pionka w liscie, jezeli na 1 polu jest wiecej niz 1 pionek
 }_pawn;
 
 typedef struct {

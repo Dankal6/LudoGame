@@ -145,3 +145,24 @@ void draw_exits(_field *exit, HANDLE h)
 		draw_field(exit[i], h);
 	}
 }
+
+void draw_the_center(HANDLE h)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		gotoxy(5 * 4 + i, 5 * 2, h);
+		changeConsoleColor(119);
+		printf("%c", 219);
+		gotoxy(5 * 4 + i, 5 * 2 + 1, h);
+		printf("%c", 219);
+	}
+}
+
+void draw_board(_board *board, HANDLE h)
+{
+	draw_bases(board, h);
+	draw_goals(board, h);
+	draw_road(board->road, h);
+	draw_exits(board->exits, h);
+	draw_the_center(h);
+}

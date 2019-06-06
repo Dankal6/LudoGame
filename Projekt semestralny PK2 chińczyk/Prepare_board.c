@@ -29,11 +29,12 @@ void init_board(_board *board)
 	{
 		board->road[i].how_many_pawns = 0;
 	}
-
-
+	prepare_road(board->road);
+	prepare_goals(board);
+	prepare_road(board->road);
 }
 
-void prepare_bases(_board *board, _pawn *pawns,int num_of_players)
+void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 {
 	int blue_pawn = 1, green_pawn = 1, yellow_pawn = 1, red_pawn = 1;
 	for (int i = 0; i < 11; i++)
@@ -113,7 +114,7 @@ void prepare_bases(_board *board, _pawn *pawns,int num_of_players)
 					continue;
 
 				}
-				if (j > 8 && num_of_players>2)
+				if (j > 8 && num_of_players > 2)
 				{
 					pawns[blue_pawn + 7].player = 2;
 					pawns[blue_pawn + 7].id = blue_pawn;
@@ -237,5 +238,10 @@ void prepare_road(_field *road)
 		else
 			road[j].color = 255;
 	}
+	//wyjscia z baz
+	road[0].color = 34;
+	road[10].color = 102;
+	road[20].color = 17;
+	road[30].color = 68;
 }
 
