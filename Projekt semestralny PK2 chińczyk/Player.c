@@ -24,7 +24,7 @@ void init_players(_player *players, int num_of_players)
 		players[i].id = i;
 		players[i].random = 0;
 		players[i].place = 0;
-
+		players[i].AI = 0;
 	}
 }
 
@@ -76,7 +76,46 @@ int ask_for_load(HANDLE h)
 { 
 	int choice;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("1. Play.\n2. Load from file.\nChoice: ");
+	printf("1. New game.\n2. Load from file.\nChoice: ");
+	scanf("%i", &choice);
+	clear_text(0, h);
+	return choice;
+}
+
+void ask_for_AI_players(_player *players, HANDLE h, int num_of_players)
+{
+	int num_of_AI_players;
+	gotoxy(0, 0, h);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	printf("How many AI players? ");
+	scanf("%i", &num_of_AI_players);
+	if (num_of_AI_players == num_of_players)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			players[i].AI = 1;
+		}
+	}
+	else
+	{
+		int AI_players;
+		printf("Which? 1-%i", num_of_players);
+		for (int i = 0; i < num_of_AI_players; i++)
+		{
+			scanf("%i", &AI_players);
+			players[AI_players - 1].AI = 1;
+		}
+	}
+	clear_text(0, h);
+	return;
+}
+
+int ask_for_auto_dice(HANDLE h)
+{
+	int choice;
+	gotoxy(0, 0, h);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	printf("0. Manual dice.\n1. Auto dice.\nChoice: ");
 	scanf("%i", &choice);
 	clear_text(0, h);
 	return choice;

@@ -96,7 +96,7 @@ int choose_pawn(_player *player, int dice, _board *board, _pawn *pawns)
 			_pawn toCheck = pawns[player->id * 4 + i];
 			if (toCheck.in_base == 0)			//sprawdzam, czy ten pionek jest poza baza
 			{
-				if (toCheck.distance + dice > 39 && toCheck.distance + dice < 44 && board->road[pawns[player->id * 4 + i].distance + (4 * pawns[player->id * 4 + i].player) + dice - 1].pawns == NULL) //oznacza to, ze pionek moze wejsc do bazy, wiec go wybieram
+				if (toCheck.distance + dice > 39 && toCheck.distance + dice < 45 && board->road[pawns[player->id * 4 + i].distance + (4 * pawns[player->id * 4 + i].player) + dice - 1].pawns == NULL) //oznacza to, ze pionek moze wejsc do bazy, wiec go wybieram
 				{
 					return i + 1;
 				}

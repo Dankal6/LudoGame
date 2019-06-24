@@ -42,7 +42,6 @@ int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			int pawns = board->road[next_field].how_many_pawns;
 			if (pawns == 0)
 			{
-				//board->road[next_field].pawns = malloc(sizeof(_pawn));		//przydzielanie pamieci
 				board->road[next_field].pawns = NULL;
 			}
 
@@ -84,8 +83,9 @@ int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 	}
 	else
 	{
+		gotoxy(0, 25, h);
 		printf("You can't move that pawn!");
-		Sleep(50);
+		Sleep(1000);
 		return 0;
 	}
 
@@ -108,19 +108,19 @@ void return_to_base(_pawn *pawn, _board *board, HANDLE h)
 void beat_enemy_pawns(_pawn *pawn, _board *board, HANDLE h)
 {
 	int i = 0;
-	int temp2 = board->road[pawn->pos_on_road].how_many_pawns;
-	_pawn *temp = board->road[pawn->pos_on_road].pawns;
-	for (int i = 0; i < temp2; i++)
+	int pawns_on_field = board->road[pawn->pos_on_road].how_many_pawns;
+	_pawn *to_beat = board->road[pawn->pos_on_road].pawns;
+	for (int i = 0; i < pawns_on_field; i++)
 	{
-		if (temp->color != pawn->color)	//porownuje po kolorach, bo czemu nie
+		if (to_beat->color != pawn->color)	//porownuje po kolorach, bo czemu nie
 		{
-			return_to_base(temp, board, h);
+			return_to_base(to_beat, board, h);
 			pop_front(&board->road[pawn->pos_on_road].pawns);	//usuwanie wskaznika na pionek, ktory wlasnie wrocil do bazy
 			board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci pionkow na usunietym polu 
-			temp = board->road[pawn->pos_on_road].pawns;
+			to_beat = board->road[pawn->pos_on_road].pawns;
 			continue;
 		}
-		temp = temp->next;
+		to_beat = to_beat->next;
 	}
 }
 
@@ -140,9 +140,9 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 
 	if (pawns == 0)
 	{
-		//board->road[player->begin].pawns = malloc(sizeof(_pawn));		//przydzielanie pamieci
 		board->road[player->begin].pawns = NULL;
 	}
+
 	push_back(&board->road[player->begin].pawns, pawn);		//ustawiam wskaznik na nowego pionka
 	board->road[player->begin].how_many_pawns++;		//inkrementuje ilosc pionkow na polu
 	draw_field(board->bases[player->id][pawn->id - 1], h);	//usuwam pionka z bazy
@@ -174,7 +174,9 @@ int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			pawn->y = board->road[pawn->distance + (4 * pawn->player)].y;
 			int pawns = board->road[pawn->distance + (4 * pawn->player)].how_many_pawns;
 			if (pawns == 0)
+			{
 				board->road[pawn->distance + (4 * pawn->player)].pawns = NULL;
+			}
 
 			if (pawn->distance >= 41)
 			{

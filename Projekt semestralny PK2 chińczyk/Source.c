@@ -1,4 +1,4 @@
-#include "Header.h"
+#include "Structures.h"
 //34,32 - ZIELONY ; 102,96 ZOLTY ; 68,64 CZERWONY ; 17,16 NIEBIESKI
 
 void changeConsoleColor(int x)
@@ -30,7 +30,36 @@ void clear_text(int x,HANDLE h)
 	gotoxy(0, x + 5, h);
 	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	gotoxy(0, x, h);
 	return;
+}
+
+void init_game(_board **board, _pawn **pawns, _player **players, HANDLE h)
+{
+	(*board) = malloc(sizeof(_board));
+	int choice = ask_for_load(h);
+	if (choice == 2)
+	{
+		(*board)->num_of_players = load_players_from_file();
+	}
+	else
+	{
+		(*board)->num_of_players = ask_for_players(h);
+	}
+	(*pawns)= malloc(((*board)->num_of_players * 4) * sizeof(_pawn));
+	(*players) = malloc((*board)->num_of_players * sizeof(_player));
+	prepare_bases((*board), (*pawns), (*board)->num_of_players);
+	init_players((*players), (*board)->num_of_players);
+	init_board((*board), (*board)->num_of_players);
+
+	if (choice == 2)
+	{
+		load_from_file((*pawns), (*board), (*players), h);
+	}
+	else
+	{
+		ask_for_AI_players((*players), h, (*board)->num_of_players);
+	}
 }
 
 int main()
@@ -40,67 +69,84 @@ int main()
 	int place=1;		//miejsce na "podium"
 	int play=1;			//warunek zakonczenia gry
 	int moved, dice;
-	int num_of_players;
+
+	//int choice=0;
+	int autodice;
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 
+	_board *board;
+	_pawn *pawns;
+	_player *players;
+
+	/*board = malloc(sizeof(_board));
 	int choice = ask_for_load(h);
 	if (choice == 2)
 	{
-		num_of_players = load_players_from_file();
+		board->num_of_players = load_players_from_file();
 	}
 	else
 	{
-		num_of_players = ask_for_players(h);
+		board->num_of_players = ask_for_players(h);
 	}
-
-	_board *board = malloc(sizeof(_board));
-	_pawn *pawns = malloc((num_of_players*4) * sizeof(_pawn));
-	_player *players = malloc(num_of_players * sizeof(_player));
-
-	prepare_bases(board, pawns, num_of_players);
-	init_players(players, num_of_players);
-
-	init_board(board, num_of_players);
-	draw_board(board, h);
+	pawns = malloc((board->num_of_players * 4) * sizeof(_pawn));
+	players = malloc(board->num_of_players * sizeof(_player));
+	prepare_bases(board, pawns, board->num_of_players);
+	init_players(players, board->num_of_players);
+	init_board(board, board->num_of_players);
 
 	if (choice == 2)
 	{
-		load_from_file(pawns, board,players,h);
+		load_from_file(pawns, board, players, h);
 	}
+	else
+	{
+		ask_for_AI_players(players, h, board->num_of_players);
+	}*/
+
+	init_game(&board,&pawns,&players,h);
+	autodice = ask_for_auto_dice(h);
+	draw_board(board, h);
+
+
 
 	while (play)		//glowna petla gry
 	{
-		//save_to_file(pawns,players,num_of_players);		//SAVE
-		if (players[i].place != 0)
+		save_to_file(pawns,players, board->num_of_players);		//SAVE
+
+		if (players[i].place != 0)	//mechanizm pomijania w kolejce graczy, ktorzy zakonczyli rozgrywke (4 pionki w bazie)
 		{
 			i++;
-			if (i == num_of_players - 1)
+			if (i == board->num_of_players - 1)
 				i = 0;
 			continue;
 		}
 
 		moved = 0;
-		dice = throw_dice();
-		int manual = 0;								//MANUAL
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+		clear_text(22, h);
+		gotoxy(0, 22, h);
+		printf("Player: ");
+		scanf("%i", &i);
 
+		clear_text(22, h);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		gotoxy(0, 22, h);
 
-		if (manual == 1)
+		if (autodice == 0)
 		{
 			printf("Dice: ");
 			scanf("%i", &dice);
-			printf("Player: ");
-			scanf("%i", &i);
 		}
-		printf("Dice: %i", dice);
-		printf(", random move: %i", players[i].random);
+		else
+		{
+			dice = throw_dice();
+		}
 		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
 
 		while (moved == 0)
 		{
-			if (manual == 0)
+			if (players[i].AI == 1)
 			{
 				pawn_nr = choose_pawn(&players[i], dice, board, pawns);
 			}
@@ -116,31 +162,23 @@ int main()
 				break;
 			}
 			moved = move_pawn(&pawns[4 * i + pawn_nr - 1], dice, board, h, pawns, &players[i]);
+			clear_text(22, h);
 		}
 		Sleep(100);
-
 		//sprawdzam, czy rozpatrywany gracz juz wygral
 		if (check_if_won(&players[i], pawns) == 1 && players[i].place==0)
 		{
-			play = endgame(&players[i], &place, num_of_players);
+			play = endgame(&players[i], &place, board->num_of_players);
 		}
 		i++;
 		//warunek zapetlania sie ID graczy
-		if (i == num_of_players)
+		if (i == board->num_of_players)
 		{
 			i = 0;
 		}
-
-		//debug
-		/*
-		for (int i = 0; i < 56; i++)
-		{
-			gotoxy(50, i, h);
-			printf("Road[%i]x,y,pawn = %i, %i, %p", i, board->road[i].x, board->road[i].y, board->road[i].pawns);
-		}*/
 	}
-	place_for_last_player(players, num_of_players);
-	show_score(players, h, num_of_players);
+	place_for_last_player(players, board->num_of_players);
+	show_score(players, h, board->num_of_players);
 	free(pawns);
 	free(board);
 	free(players);

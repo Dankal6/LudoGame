@@ -13,6 +13,7 @@ void save_to_file(_pawn * pawn, _player *players, int num_of_players)
 		fprintf(fp, "%i\n", players[i].won);
 		fprintf(fp, "%i\n", players[i].place);
 		fprintf(fp, "%i\n", players[i].random);
+		fprintf(fp, "%i\n", players[i].AI);
 	}
 	for (int i = 0; i < 16; i++)
 	{
@@ -21,6 +22,7 @@ void save_to_file(_pawn * pawn, _player *players, int num_of_players)
 		fprintf(fp, "%i\n", pawn[i].color);
 		fprintf(fp, "%i\n", pawn[i].in_base);
 		fprintf(fp, "%i\n", pawn[i].pos_on_road);
+		fprintf(fp, "%i\n", pawn[i].distance);
 		fprintf(fp, "%i\n", pawn[i].x);
 		fprintf(fp, "%i\n", pawn[i].y);
 		fprintf(fp, "%i\n", pawn[i].on_meta);
@@ -62,6 +64,7 @@ void load_from_file(_pawn *pawn, _board *board,_player *players,HANDLE h)
 		fscanf(fp, "%i\n", &players[i].won);
 		fscanf(fp, "%i\n", &players[i].place);
 		fscanf(fp, "%i\n", &players[i].random);
+		fscanf(fp, "%i\n", &players[i].AI);
 	}
 	for (int i = 0; i < num_of_players*4; i++)
 	{
@@ -70,6 +73,7 @@ void load_from_file(_pawn *pawn, _board *board,_player *players,HANDLE h)
 		fscanf(fp, "%i", &pawn[i].color);
 		fscanf(fp, "%i", &pawn[i].in_base);
 		fscanf(fp, "%i", &pawn[i].pos_on_road);
+		fscanf(fp, "%i", &pawn[i].distance);
 		fscanf(fp, "%i", &pawn[i].x);
 		fscanf(fp, "%i", &pawn[i].y);
 		fscanf(fp, "%i", &pawn[i].on_meta);
@@ -85,16 +89,4 @@ void load_from_file(_pawn *pawn, _board *board,_player *players,HANDLE h)
 		}
 	}
 	fclose(fp);
-	//rysowanie tego, co zostalo wczytane
-	for (int i = 0; i < 40; i++)
-	{
-		draw_field(board->road[i], h);
-	}
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			draw_field(board->bases[i][j], h);
-		}
-	}
 }

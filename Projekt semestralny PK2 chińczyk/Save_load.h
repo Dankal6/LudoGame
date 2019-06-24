@@ -1,5 +1,5 @@
 #pragma once
-#include "Header.h"
+#include "Structures.h"
 
 void save_to_file(_pawn*,_player*,int);
 

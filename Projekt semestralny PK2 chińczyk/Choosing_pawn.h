@@ -1,5 +1,5 @@
 #pragma once
-#include "Header.h"
+#include "Structures.h"
 
 int choose_pawn(_player*, int, _board*, _pawn*);	//dla gracza sterowanego przez komputer, aby "chetniej" zbijal gdy ma mozliwosc
 

@@ -9,6 +9,7 @@
 typedef struct {
 	char *name;	//nazwa gracza: green, yellow, blue, red
 	int id;		//id gracza 0-3;
+	int AI;		//czy graczem steruje komputer, 0-1
 	int random;	//informacja o tym, czy komputer wykonuje losowy ruch
 	int begin;	//miejsce rozpoczecia na planszy
 	int won;	//informacja o tym, czy gracz jest 4 pionkami na mecie, 0-1
@@ -33,6 +34,7 @@ typedef struct {
 }_field;
 
 typedef struct {	
+	int num_of_players;
 	_field *road;	
 	_field exits[4];
 	_field bases[4][4];

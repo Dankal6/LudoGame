@@ -1,5 +1,5 @@
 #pragma once
-#include "Header.h"
+#include "Structures.h"
 
 void init_board(_board*);
 

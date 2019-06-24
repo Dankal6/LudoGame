@@ -1,5 +1,5 @@
 #pragma once
-#include "Header.h"
+#include "Structures.h"
 
 int move_pawn(_pawn*, int, _board*, HANDLE, _pawn*, _player*);
 

@@ -131,7 +131,7 @@
   <ItemGroup>
     <ClInclude Include="Choosing_pawn.h" />
     <ClInclude Include="Drawing.h" />
-    <ClInclude Include="Header.h" />
+    <ClInclude Include="Structures.h" />
     <ClInclude Include="List_of_pawns.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="Player.h" />
