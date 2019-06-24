@@ -67,7 +67,7 @@ int ask_for_players(HANDLE h)
 	gotoxy(0, 0, h);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	printf("How many players? ");
-	scanf("%i", &num_of_players);
+	num_of_players = get_number_from_user(1, 4);
 	clear_text(0, h);
 	return num_of_players;
 }
@@ -77,7 +77,7 @@ int ask_for_load(HANDLE h)
 	int choice;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	printf("1. New game.\n2. Load from file.\nChoice: ");
-	scanf("%i", &choice);
+	choice = get_number_from_user(1, 2);
 	clear_text(0, h);
 	return choice;
 }
@@ -87,8 +87,8 @@ void ask_for_AI_players(_player *players, HANDLE h, int num_of_players)
 	int num_of_AI_players;
 	gotoxy(0, 0, h);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("How many AI players? ");
-	scanf("%i", &num_of_AI_players);
+	printf("How many AI players? (1-%i)", num_of_players);
+	num_of_AI_players = get_number_from_user(1, num_of_players);
 	if (num_of_AI_players == num_of_players)
 	{
 		for (int i = 0; i < 4; i++)
@@ -102,7 +102,7 @@ void ask_for_AI_players(_player *players, HANDLE h, int num_of_players)
 		printf("Which? 1-%i", num_of_players);
 		for (int i = 0; i < num_of_AI_players; i++)
 		{
-			scanf("%i", &AI_players);
+			AI_players = get_number_from_user(1, num_of_players);
 			players[AI_players - 1].AI = 1;
 		}
 	}
@@ -116,7 +116,7 @@ int ask_for_auto_dice(HANDLE h)
 	gotoxy(0, 0, h);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	printf("0. Manual dice.\n1. Auto dice.\nChoice: ");
-	scanf("%i", &choice);
+	choice = get_number_from_user(0, 1);
 	clear_text(0, h);
 	return choice;
 }

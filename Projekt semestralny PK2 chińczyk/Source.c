@@ -62,6 +62,32 @@ void init_game(_board **board, _pawn **pawns, _player **players, HANDLE h)
 	}
 }
 
+int get_number_from_user(int a, int b)
+{
+	int correct = -1;
+	int num;
+	CONSOLE_SCREEN_BUFFER_INFO cbsi;
+	HANDLE h;
+	h = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(h, &cbsi);
+	cbsi.dwCursorPosition;
+	
+	while(correct=-1)
+	{
+		//fseek(stdin, 0, SEEK_END);
+		scanf("%i", &num);
+		if (num >= a && num <= b)
+		{
+			return num;
+		}
+		else
+		{
+			gotoxy(cbsi.dwCursorPosition.X - 1, cbsi.dwCursorPosition.Y, h);
+			printf("Incorrect value! Try again: ");
+		}
+	}
+}
+
 int main()
 {
 	int pawn_nr;
@@ -141,7 +167,7 @@ int main()
 		if (autodice == 0)
 		{
 			printf("Dice: ");
-			scanf("%i", &dice);
+			dice = get_number_from_user(1, 6);
 		}
 		else
 		{
@@ -158,7 +184,7 @@ int main()
 			else
 			{
 				printf("Pawn: ");
-				scanf("%i", &pawn_nr);
+				pawn_nr = get_number_from_user(1, 4);
 			}
 			printf("Choosed pawn: %i", pawn_nr);
 			if (moveable(&players[i], dice, pawns,board) == 0)

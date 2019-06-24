@@ -23,7 +23,7 @@ void init_board(_board *board, int num_of_players)
 				board->bases[i][j].color = 68;
 		}
 	}
-	board->road = malloc(40 + (num_of_players * 4) * sizeof(_field));
+	board->road = malloc((40 + (num_of_players * 4)) * sizeof(_field));
 	prepare_road(board->road, num_of_players);
 }
 
