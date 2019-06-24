@@ -76,7 +76,12 @@ int main()
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	_board *board = malloc(sizeof(_board));
+
+	_board *board;
+	_pawn *pawns;
+	_player *players;
+
+	/*_board *board = malloc(sizeof(_board));
 	choice = ask_for_load(h);
 	if (choice == 2)
 	{
@@ -100,9 +105,9 @@ int main()
 	else
 	{
 		ask_for_AI_players(players, h, board->num_of_players);
-	}
+	}*/
 
-	//init_game(&board,&pawns,&players,h);
+	init_game(&board,&pawns,&players,h);
 	autodice = ask_for_auto_dice(h);
 	draw_board(board, h);
 
