@@ -9,4 +9,4 @@ void beat_enemy_pawns(_pawn*, _board*, HANDLE);
 
 void leave_the_base(_player*, _pawn*, _board*, HANDLE);
 
-int go_finish(_pawn*, int, _board*, HANDLE, _pawn*, _player*);
+int go_finish(_pawn*, int, int, _board*, HANDLE, _pawn*, _player*);

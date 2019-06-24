@@ -9,7 +9,7 @@ int throw_dice()
 
 int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
 {
-	if (pawn->distance + dice > 45)
+	if (pawn->distance + dice > 45 || board->road[pawn->distance + (4 * pawn->player) + dice - 1].pawns != NULL)
 	{
 		return 0;
 	}
@@ -30,7 +30,7 @@ int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			//if ((player->begin - pawn->pos_on_road == 1 && player->id != 0) || (player->id == 0 && pawn->pos_on_road == 39))	//wchodze na mete
 			if(pawn->distance==40)
 			{
-				return go_finish(pawn, dice - (i), board, h, pawns, player);
+				return go_finish(pawn, dice - (i), dice, board, h, pawns, player);
 			}
 			if (next_field == 40)
 			{
@@ -76,15 +76,17 @@ int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 				draw_field(board->road[next_field - 1], h);
 			}
 		}
+		if (dice == 6)
+		{
+			return 0;
+		}
 	}
 	else if (pawn->distance >= 41)
 	{
-		return go_finish(pawn, dice, board, h, pawns, player);
+		return go_finish(pawn, dice, dice, board, h, pawns, player);
 	}
 	else
 	{
-		gotoxy(0, 25, h);
-		printf("You can't move that pawn!");
 		return 0;
 	}
 
@@ -155,17 +157,17 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 	draw_field(board->road[player->begin], h);
 }
 
-int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)
+int go_finish(_pawn *pawn, int dice_left, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)
 {
-	if (pawn->distance + dice > 44)
+	if (pawn->distance + dice_left > 44)
 	{
 		return 0;
 	}
-	if (board->road[pawn->distance + (4 * pawn->player) + dice - 1].pawns != NULL)	//to oznacza, iz na polu, na ktore zmierza pionek jakis pionek juz jest, a na mecie pionki grupowaæ siê nie mog¹
+	if (board->road[pawn->distance + (4 * pawn->player) + dice_left - 1].pawns != NULL)	//to oznacza, iz na polu, na ktore zmierza pionek jakis pionek juz jest, a na mecie pionki grupowaæ siê nie mog¹
 	{
 		return 0;
 	}
-	for (int i = 0; i < dice; i++)
+	for (int i = 0; i < dice_left; i++)
 	{
 		if (pawn->on_meta < 5)
 		{
@@ -180,7 +182,7 @@ int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			if (pawn->distance >= 41)
 			{
 				int pos = position_in_list(&board->road[pawn->distance + (4 * pawn->player) - 1].pawns, pawn);
-				pop_by_index(&board->road[pawn->distance + (4 * pawn->player) - 1].pawns, pos);	//tu jest problem
+				pop_by_index(&board->road[pawn->distance + (4 * pawn->player) - 1].pawns, pos);
 				board->road[pawn->distance + (4 * pawn->player) - 1].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
 			}
 			else
@@ -202,6 +204,10 @@ int go_finish(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 			draw_field(board->road[pawn->distance + (4 * pawn->player) - 1], h);
 			pawn->distance++;
 		}
+	}
+	if (dice == 6)
+	{
+		return 0;
 	}
 	return 1;
 }

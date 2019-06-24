@@ -14,21 +14,14 @@ void gotoxy(int x, int y, HANDLE h)
 	SetConsoleCursorPosition(h, c);
 }
 //czysci tekst pod plansza
-void clear_text(int x,HANDLE h)
+void clear_text(int x,int y,HANDLE h)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0);
-	gotoxy(0, x, h);
-	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
-	gotoxy(0, x+1, h);
-	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
-	gotoxy(0, x+2, h);
-	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
-	gotoxy(0, x+3, h);
-	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
-	gotoxy(0, x + 4, h);
-	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
-	gotoxy(0, x + 5, h);
-	printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
+	for (int i = 0; i < y; i++)
+	{
+		gotoxy(0, x+i, h);
+		printf("aaaaaaaaaaaaaaaaa/taaaaaaaaaaaaaaaaaaaaa");
+	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	gotoxy(0, x, h);
 	return;
@@ -47,7 +40,7 @@ void init_game(_board **board, _pawn **pawns, _player **players, HANDLE h)
 		(*board)->num_of_players = ask_for_players(h);
 	}
 	(*pawns)= malloc(((*board)->num_of_players * 4) * sizeof(_pawn));
-	(*players) = malloc((*board)->num_of_players * sizeof(_player));
+	(*players) = malloc(((*board)->num_of_players) * sizeof(_player));
 	prepare_bases((*board), (*pawns), (*board)->num_of_players);
 	init_players((*players), (*board)->num_of_players);
 	init_board((*board), (*board)->num_of_players);
@@ -74,16 +67,19 @@ int get_number_from_user(int a, int b)
 	
 	while(correct=-1)
 	{
-		//fseek(stdin, 0, SEEK_END);
+		fseek(stdin, 0, SEEK_END);
+
 		scanf("%i", &num);
 		if (num >= a && num <= b)
 		{
+			clear_text(cbsi.dwCursorPosition.Y + 1, 1, h);
 			return num;
 		}
 		else
 		{
-			gotoxy(cbsi.dwCursorPosition.X - 1, cbsi.dwCursorPosition.Y, h);
-			printf("Incorrect value! Try again: ");
+			clear_text(cbsi.dwCursorPosition.Y + 1, 1, h);
+			gotoxy(0, cbsi.dwCursorPosition.Y, h);
+			printf("\nIncorrect value! Try again: ");
 		}
 	}
 }
@@ -99,13 +95,12 @@ int main()
 
 	int choice=0;
 	int autodice;
-	HANDLE h;
-	h = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
 
-	_board *board;
-	_pawn *pawns;
-	_player *players;
+	_board *board;// = malloc(sizeof(_board));
+	_pawn *pawns;// = malloc(sizeof(_pawn));
+	_player *players;// = malloc(sizeof(_player));
 
 	/*_board *board = malloc(sizeof(_board));
 	choice = ask_for_load(h);
@@ -136,12 +131,11 @@ int main()
 	init_game(&board,&pawns,&players,h);
 	autodice = ask_for_auto_dice(h);
 	draw_board(board, h);
-
-
+	
 
 	while (play && esc !=27)		//glowna petla gry
 	{
-		save_to_file(pawns,players, board->num_of_players);		//SAVE
+		save_to_file(pawns, players, board->num_of_players);		//SAVE
 
 		if (kbhit())
 		{
@@ -159,11 +153,9 @@ int main()
 
 		moved = 0;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-		clear_text(22, h);
 		//printf("Player: ");
 		//scanf("%i", &i);
-		clear_text(22, h);
-
+		clear_text(22, 1, h);
 		if (autodice == 0)
 		{
 			printf("Dice: ");
@@ -177,6 +169,13 @@ int main()
 
 		while (moved == 0)
 		{
+			if (moveable(&players[i], dice, pawns, board) == 0)
+			{
+				printf("\nNo move to make!");
+				Sleep(1000);
+				clear_text(22, 4, h);
+				break;
+			}
 			if (players[i].AI == 1)
 			{
 				pawn_nr = choose_pawn(&players[i], dice, board, pawns);
@@ -187,16 +186,14 @@ int main()
 				pawn_nr = get_number_from_user(1, 4);
 			}
 			printf("Choosed pawn: %i", pawn_nr);
-			if (moveable(&players[i], dice, pawns,board) == 0)
-			{
-				printf("\nNo move to make!");
-				Sleep(1000);
-				clear_text(22, h);
-				break;
-			}
 			moved = move_pawn(&pawns[4 * i + pawn_nr - 1], dice, board, h, pawns, &players[i]);
+			if (moved == 0)
+			{
+				gotoxy(0, 25, h);
+				printf("You can't move that pawn!");
+			}
 			Sleep(1000);
-			clear_text(22, h);
+			clear_text(22,4, h);
 		}
 		Sleep(100);
 		//sprawdzam, czy rozpatrywany gracz juz wygral
