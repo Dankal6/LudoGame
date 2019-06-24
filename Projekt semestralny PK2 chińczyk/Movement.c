@@ -85,7 +85,6 @@ int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _pla
 	{
 		gotoxy(0, 25, h);
 		printf("You can't move that pawn!");
-		Sleep(1000);
 		return 0;
 	}
 

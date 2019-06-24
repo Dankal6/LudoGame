@@ -69,18 +69,15 @@ int main()
 	int place=1;		//miejsce na "podium"
 	int play=1;			//warunek zakonczenia gry
 	int moved, dice;
+	char esc=0;
 
-	//int choice=0;
+	int choice=0;
 	int autodice;
 	HANDLE h;
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	_board *board;
-	_pawn *pawns;
-	_player *players;
-
-	/*board = malloc(sizeof(_board));
-	int choice = ask_for_load(h);
+	_board *board = malloc(sizeof(_board));
+	choice = ask_for_load(h);
 	if (choice == 2)
 	{
 		board->num_of_players = load_players_from_file();
@@ -89,8 +86,9 @@ int main()
 	{
 		board->num_of_players = ask_for_players(h);
 	}
-	pawns = malloc((board->num_of_players * 4) * sizeof(_pawn));
-	players = malloc(board->num_of_players * sizeof(_player));
+	_pawn *pawns = malloc((board->num_of_players * 4) * sizeof(_pawn));
+	_player *players = malloc(board->num_of_players * sizeof(_player));
+
 	prepare_bases(board, pawns, board->num_of_players);
 	init_players(players, board->num_of_players);
 	init_board(board, board->num_of_players);
@@ -102,17 +100,23 @@ int main()
 	else
 	{
 		ask_for_AI_players(players, h, board->num_of_players);
-	}*/
+	}
 
-	init_game(&board,&pawns,&players,h);
+	//init_game(&board,&pawns,&players,h);
 	autodice = ask_for_auto_dice(h);
 	draw_board(board, h);
 
 
 
-	while (play)		//glowna petla gry
+	while (play && esc !=27)		//glowna petla gry
 	{
 		save_to_file(pawns,players, board->num_of_players);		//SAVE
+
+		if (kbhit())
+		{
+			esc = getch();
+			break;
+		}
 
 		if (players[i].place != 0)	//mechanizm pomijania w kolejce graczy, ktorzy zakonczyli rozgrywke (4 pionki w bazie)
 		{
@@ -125,13 +129,9 @@ int main()
 		moved = 0;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		clear_text(22, h);
-		gotoxy(0, 22, h);
-		printf("Player: ");
-		scanf("%i", &i);
-
+		//printf("Player: ");
+		//scanf("%i", &i);
 		clear_text(22, h);
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-		gotoxy(0, 22, h);
 
 		if (autodice == 0)
 		{
@@ -142,7 +142,7 @@ int main()
 		{
 			dice = throw_dice();
 		}
-		printf("\nPlayer: %s, dice: %i", players[i].name, dice);
+		printf("Player: %s, dice: %i\n", players[i].name, dice);
 
 		while (moved == 0)
 		{
@@ -152,16 +152,19 @@ int main()
 			}
 			else
 			{
-				printf("\nPawn: ");
+				printf("Pawn: ");
 				scanf("%i", &pawn_nr);
 			}
 			printf("Choosed pawn: %i", pawn_nr);
 			if (moveable(&players[i], dice, pawns,board) == 0)
 			{
+				printf("\nNo move to make!");
+				Sleep(1000);
 				clear_text(22, h);
 				break;
 			}
 			moved = move_pawn(&pawns[4 * i + pawn_nr - 1], dice, board, h, pawns, &players[i]);
+			Sleep(1000);
 			clear_text(22, h);
 		}
 		Sleep(100);
@@ -177,8 +180,12 @@ int main()
 			i = 0;
 		}
 	}
-	place_for_last_player(players, board->num_of_players);
-	show_score(players, h, board->num_of_players);
+	printf("\nGAME OVER");
+	if (esc != 27)
+	{
+		place_for_last_player(players, board->num_of_players);
+		show_score(players, h, board->num_of_players);
+	}
 	free(pawns);
 	free(board);
 	free(players);
