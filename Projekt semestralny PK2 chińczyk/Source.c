@@ -140,7 +140,6 @@ int main()
 		if (kbhit())
 		{
 			esc = getch();
-			break;
 		}
 
 		if (players[i].place != 0)	//mechanizm pomijania w kolejce graczy, ktorzy zakonczyli rozgrywke (4 pionki w bazie)
