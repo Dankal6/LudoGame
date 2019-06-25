@@ -7,89 +7,85 @@ int throw_dice()
 	return dice;
 }
 
-int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)	//pawns zdaje sie byc zbedne
+void update_pawn(_pawn *pawn, _field field)
 {
-	if (pawn->distance + dice > 45 || board->road[pawn->distance + (4 * pawn->player) + dice - 1].pawns != NULL)
+	pawn->pos_on_road++;
+	pawn->distance++;
+	pawn->x = field.x;
+	pawn->y = field.y;
+}
+
+int move_pawn(_pawn *pawn, int dice, _board *board, HANDLE h, _player *player)
+{
+	if (pawn->distance + dice > 45 || pawn->distance > 40 && board->road[pawn->distance + (4 * pawn->player) + dice - 1].pawns != NULL)
 	{
 		return 0;
 	}
 	//sprawdzam, czy wybrany pionek znajduje sie w bazie, oraz czy wyrzucona zostala 6stka
 	if (pawn->in_base == 1 && dice == 6)
 	{
-		leave_the_base(player, pawn, board, h, pawns);
+		leave_the_base(player, pawn, board, h);
 		return 1;
 	}
 	//sprawdzam, czy wybrany pionek jest na mecie, czy jeszcze w drodze
 	else if (pawn->on_meta == 0 && pawn->in_base == 0)
 	{
-		int temp = pawn->pos_on_road;
-		int temp2 = temp;
-		for (int i = 0; i < dice; i++)
-		{
-			int next_field = pawn->pos_on_road + 1;
-			//if ((player->begin - pawn->pos_on_road == 1 && player->id != 0) || (player->id == 0 && pawn->pos_on_road == 39))	//wchodze na mete
-			if(pawn->distance==40)
-			{
-				return go_finish(pawn, dice - (i), dice, board, h, pawns, player);
-			}
-			if (next_field == 40)
-			{
-				next_field = 0;
-			}
-			int x = board->road[next_field].x;
-			int y = board->road[next_field].y;
-
-			int pawns = board->road[next_field].how_many_pawns;
-			if (pawns == 0)
-			{
-				board->road[next_field].pawns = NULL;
-			}
-
-			int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
-			pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
-			push_back(&board->road[next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
-
-			board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
-			board->road[next_field].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
-			pawn->pos_on_road++;
-			pawn->distance++;
-			if (pawn->pos_on_road == 40)
-			{
-				pawn->pos_on_road = 0;
-			}
-			pawn->x = x;
-			pawn->y = y;
-			Sleep(50);
-			if (i == (dice - 1) && board->road[next_field].how_many_pawns > 1)
-			{
-				beat_enemy_pawns(pawn, board, h);
-			}
-			//rysowanie nowego pola
-			draw_field(board->road[next_field], h);
-			//odtwarzanie starego pola
-			if (next_field == 0)
-			{
-				draw_field(board->road[39], h);
-			}
-			else
-			{
-				draw_field(board->road[next_field - 1], h);
-			}
-		}
-		if (dice == 6)
-		{
-			return 0;
-		}
+		return go_road(dice, pawn, board, player, h);
 	}
 	else if (pawn->distance >= 41)
 	{
-		return go_finish(pawn, dice, dice, board, h, pawns, player);
+		return go_finish(pawn, dice, dice, board, h, player);
 	}
 	else
 	{
 		return 0;
 	}
+}
 
+int go_road(int dice, _pawn *pawn, _board *board, _player *player, HANDLE h)
+{
+	for (int i = 0; i < dice; i++)
+	{
+		int next_field = pawn->pos_on_road + 1;
+		if (pawn->distance == 40)
+		{
+			return go_finish(pawn, dice - (i), dice, board, h, player);
+		}
+		if (next_field == 40)
+		{
+			next_field = 0;
+		}
+		int pawns = board->road[next_field].how_many_pawns;
+		if (pawns == 0)
+		{
+			board->road[next_field].pawns = NULL;
+		}
+		int pos = position_in_list(&board->road[pawn->pos_on_road].pawns, pawn);
+		pop_by_index(&board->road[pawn->pos_on_road].pawns, pos);
+		push_back(&board->road[next_field].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
+		board->road[pawn->pos_on_road].how_many_pawns--;	//dekrementacja ilosci piokow ze starego pola
+		board->road[next_field].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
+		update_pawn(pawn, board->road[next_field]);
+		if (pawn->pos_on_road == 40)
+		{
+			pawn->pos_on_road = 0;
+		}
+		//wykonuje ostani ruch, sprawdzam, czy jest cos do zbicia
+		if (i == (dice - 1) && board->road[next_field].how_many_pawns > 1)
+		{
+			beat_enemy_pawns(pawn, board, h);
+		}
+		draw_prev_next_field(board, next_field, h);
+		Sleep(100);
+	}
+	if (dice == 6)
+	{
+		return 2;
+	}
+	else
+	{
+		return 1;
+	}
 }
 
 void return_to_base(_pawn *pawn, _board *board, HANDLE h)
@@ -157,7 +153,7 @@ void leave_the_base(_player *player, _pawn *pawn, _board *board, HANDLE h)
 	draw_field(board->road[player->begin], h);
 }
 
-int go_finish(_pawn *pawn, int dice_left, int dice, _board *board, HANDLE h, _pawn *pawns, _player *player)
+int go_finish(_pawn *pawn, int dice_left, int dice, _board *board, HANDLE h, _player *player)
 {
 	if (pawn->distance + dice_left > 44)
 	{
@@ -173,12 +169,12 @@ int go_finish(_pawn *pawn, int dice_left, int dice, _board *board, HANDLE h, _pa
 		{
 			pawn->x = board->road[pawn->distance + (4 * pawn->player)].x;
 			pawn->y = board->road[pawn->distance + (4 * pawn->player)].y;
+
 			int pawns = board->road[pawn->distance + (4 * pawn->player)].how_many_pawns;
 			if (pawns == 0)
 			{
 				board->road[pawn->distance + (4 * pawn->player)].pawns = NULL;
 			}
-
 			if (pawn->distance >= 41)
 			{
 				int pos = position_in_list(&board->road[pawn->distance + (4 * pawn->player) - 1].pawns, pawn);
@@ -196,18 +192,17 @@ int go_finish(_pawn *pawn, int dice_left, int dice, _board *board, HANDLE h, _pa
 
 			push_back(&board->road[pawn->distance + (4 * pawn->player)].pawns, pawn);		//dodaje wskazik na nowego pionka dla pola dalej
 			board->road[pawn->distance + (4 * pawn->player)].how_many_pawns++;	//inkrementacja ilosci pionkow na nowym polu
-
-			Sleep(50);
 			//rysowanie nowego pola
 			draw_field(board->road[pawn->distance + (4 * pawn->player)], h);
 			//odtwarzanie starego pola
 			draw_field(board->road[pawn->distance + (4 * pawn->player) - 1], h);
 			pawn->distance++;
+			Sleep(100);
 		}
 	}
 	if (dice == 6)
 	{
-		return 0;
+		return 2;
 	}
 	return 1;
 }

@@ -15,7 +15,7 @@ void save_to_file(_pawn * pawn, _player *players, int num_of_players)
 		fprintf(fp, "%i\n", players[i].random);
 		fprintf(fp, "%i\n", players[i].AI);
 	}
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < num_of_players*4; i++)
 	{
 		fprintf(fp, "%i\n", pawn[i].id);
 		fprintf(fp, "%i\n", pawn[i].player);
@@ -35,8 +35,9 @@ int load_players_from_file()
 	int num_of_players;
 	FILE *fp;
 	if ((fp = fopen("save.txt", "r")) == NULL) {
-		printf("Can not open file!\n");
-		return;
+		printf("Can not open save.txt file!\n");
+		Sleep(1000);
+		exit(0);
 	}
 	fscanf(fp, "%i", &num_of_players);
 	return num_of_players;
@@ -44,18 +45,19 @@ int load_players_from_file()
 
 void load_from_file(_pawn *pawn, _board *board,_player *players,HANDLE h)
 {
-	for (int i = 0; i < 4; i++)
+	FILE *fp;
+	if ((fp = fopen("save.txt", "r")) == NULL) {
+		printf("Can not open save.txt file!\n");
+		Sleep(1000);
+		exit(0);
+	}
+	for (int i = 0; i < board->num_of_players; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < board->num_of_players; j++)
 		{
 			board->bases[i][j].how_many_pawns = 0;
 			pop_front(&board->bases[i][j].pawns);
 		}
-	}
-	FILE *fp;
-	if ((fp = fopen("save.txt", "r")) == NULL) {
-		printf("Can not open file!\n");
-		return;
 	}
 	int num_of_players;
 	fscanf(fp, "%i", &num_of_players);
@@ -84,8 +86,8 @@ void load_from_file(_pawn *pawn, _board *board,_player *players,HANDLE h)
 		}
 		else
 		{
-			push_back(&board->road[pawn[i].pos_on_road].pawns, &pawn[i]);		//ustawiam wskaznik na pionka w trasie
-			board->road[pawn[i].pos_on_road].how_many_pawns++;
+			push_back(&board->road[pawn[i].distance+(4*pawn[i].player)-1].pawns, &pawn[i]);		//ustawiam wskaznik na pionka w trasie
+			board->road[pawn[i].distance + (4*pawn[i].player)-1].how_many_pawns++;
 		}
 	}
 	fclose(fp);

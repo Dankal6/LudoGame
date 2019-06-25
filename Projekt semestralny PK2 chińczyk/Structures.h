@@ -38,10 +38,9 @@ typedef struct {
 
 typedef struct {	
 	int num_of_players;
-	_field *road;	
+	_field road[56];	
 	_field exits[4];
 	_field bases[4][4];
-	//_field meta[4][4];	//testowo przerzucam do road[56]
 }_board;
 
 #endif

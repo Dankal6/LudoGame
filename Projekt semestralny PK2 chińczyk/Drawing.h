@@ -18,4 +18,6 @@ void draw_exits(_field*, HANDLE);
 
 void draw_the_center(HANDLE);
 
+void draw_prev_next_field(_board *, int, HANDLE);
+
 #endif

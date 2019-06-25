@@ -23,7 +23,6 @@ void init_board(_board *board, int num_of_players)
 				board->bases[i][j].color = 68;
 		}
 	}
-	board->road = malloc(56 * sizeof(_field));
 	prepare_road(board->road, num_of_players);
 }
 
@@ -50,7 +49,6 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 					pawns[green_pawn - 1].distance = 0;
 					pawns[green_pawn - 1].next = NULL;
 
-					board->bases[0][green_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[0][green_pawn - 1].pawns = NULL;
 					push_back(&board->bases[0][green_pawn - 1].pawns, &pawns[green_pawn - 1]);
 					board->bases[0][green_pawn - 1].x = j;
@@ -73,7 +71,6 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 					pawns[yellow_pawn + 3].distance = 0;
 					pawns[yellow_pawn + 3].next = NULL;
 
-					board->bases[1][yellow_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
 					board->bases[1][yellow_pawn - 1].pawns = NULL;
 					push_back(&board->bases[1][yellow_pawn - 1].pawns, &pawns[3 + yellow_pawn]);
 					board->bases[1][yellow_pawn - 1].x = j;
@@ -86,50 +83,52 @@ void prepare_bases(_board *board, _pawn *pawns, int num_of_players)
 			}
 			if (i > 8)
 			{
-				if (j < 2 && num_of_players>3)
+				if (j < 2)
 				{
-					pawns[red_pawn + 11].player = 3;
-					pawns[red_pawn + 11].color = 64;
-					pawns[red_pawn + 11].id = red_pawn;
-					pawns[red_pawn + 11].x = j;
-					pawns[red_pawn + 11].y = i;
-					pawns[red_pawn + 11].in_base = 1;
-					pawns[red_pawn + 11].distance = 0;
-					pawns[red_pawn + 11].pos_on_road = 0;
-					pawns[red_pawn + 11].on_meta = 0;
-					pawns[red_pawn + 11].next = NULL;
-
-					board->bases[3][red_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
-					board->bases[3][red_pawn - 1].pawns = NULL;
-					push_back(&board->bases[3][red_pawn - 1].pawns, &pawns[11 + red_pawn]);
 					board->bases[3][red_pawn - 1].x = j;
 					board->bases[3][red_pawn - 1].y = i;
-					board->bases[3][red_pawn - 1].how_many_pawns = 1;
+					if (num_of_players > 3)
+					{
+						pawns[red_pawn + 11].player = 3;
+						pawns[red_pawn + 11].color = 64;
+						pawns[red_pawn + 11].id = red_pawn;
+						pawns[red_pawn + 11].x = j;
+						pawns[red_pawn + 11].y = i;
+						pawns[red_pawn + 11].in_base = 1;
+						pawns[red_pawn + 11].distance = 0;
+						pawns[red_pawn + 11].pos_on_road = 0;
+						pawns[red_pawn + 11].on_meta = 0;
+						pawns[red_pawn + 11].next = NULL;
 
+						board->bases[3][red_pawn - 1].pawns = NULL;
+						push_back(&board->bases[3][red_pawn - 1].pawns, &pawns[11 + red_pawn]);
+						board->bases[3][red_pawn - 1].how_many_pawns = 1;
+					}
 					red_pawn++;
 					continue;
 
 				}
-				if (j > 8 && num_of_players > 2)
+				if (j > 8)
 				{
-					pawns[blue_pawn + 7].player = 2;
-					pawns[blue_pawn + 7].id = blue_pawn;
-					pawns[blue_pawn + 7].color = 16;
-					pawns[blue_pawn + 7].x = j;
-					pawns[blue_pawn + 7].y = i;
-					pawns[blue_pawn + 7].in_base = 1;
-					pawns[blue_pawn + 7].pos_on_road = 0;
-					pawns[blue_pawn + 7].on_meta = 0;
-					pawns[blue_pawn + 7].distance = 0;
-					pawns[blue_pawn + 7].next = NULL;
-
-					board->bases[2][blue_pawn - 1].pawns = (_pawn*)malloc(sizeof(_pawn));
-					board->bases[2][blue_pawn - 1].pawns = NULL;
-					push_back(&board->bases[2][blue_pawn - 1].pawns, &pawns[7 + blue_pawn]);
 					board->bases[2][blue_pawn - 1].x = j;
 					board->bases[2][blue_pawn - 1].y = i;
-					board->bases[2][blue_pawn - 1].how_many_pawns = 1;
+					if (num_of_players > 2)
+					{
+						pawns[blue_pawn + 7].player = 2;
+						pawns[blue_pawn + 7].id = blue_pawn;
+						pawns[blue_pawn + 7].color = 16;
+						pawns[blue_pawn + 7].x = j;
+						pawns[blue_pawn + 7].y = i;
+						pawns[blue_pawn + 7].in_base = 1;
+						pawns[blue_pawn + 7].pos_on_road = 0;
+						pawns[blue_pawn + 7].on_meta = 0;
+						pawns[blue_pawn + 7].distance = 0;
+						pawns[blue_pawn + 7].next = NULL;
 
+						board->bases[2][blue_pawn - 1].pawns = NULL;
+						push_back(&board->bases[2][blue_pawn - 1].pawns, &pawns[7 + blue_pawn]);
+						board->bases[2][blue_pawn - 1].how_many_pawns = 1;
+					}
 					blue_pawn++;
 					continue;
 				}

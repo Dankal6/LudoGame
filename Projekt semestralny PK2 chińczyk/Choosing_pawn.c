@@ -29,6 +29,7 @@ int check_if_enemy(_pawn *head, _player *player)
 			}
 			current = current->next;
 		}
+		return 0;
 	}
 }
 

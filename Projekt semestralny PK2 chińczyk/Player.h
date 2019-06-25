@@ -14,8 +14,6 @@ void show_score(_player*, HANDLE,int);
 
 int ask_for_players(HANDLE);
 
-int ask_for_load(HANDLE);
-
 void ask_for_AI_players(_player*, HANDLE,int);
 
 int ask_for_auto_dice(HANDLE);

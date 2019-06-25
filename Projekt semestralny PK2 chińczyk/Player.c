@@ -66,20 +66,10 @@ int ask_for_players(HANDLE h)
 	int num_of_players;
 	gotoxy(0, 0, h);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("How many players? ");
+	printf("How many players? (2-4)");
 	num_of_players = get_number_from_user(2, 4);
 	clear_text(0, 1,h);
 	return num_of_players;
-}
-
-int ask_for_load(HANDLE h)
-{ 
-	int choice;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("1. New game.\n2. Load from file.\nChoice: ");
-	choice = get_number_from_user(1, 2);
-	clear_text(0,3, h);
-	return choice;
 }
 
 void ask_for_AI_players(_player *players, HANDLE h, int num_of_players)
@@ -87,8 +77,8 @@ void ask_for_AI_players(_player *players, HANDLE h, int num_of_players)
 	int num_of_AI_players;
 	gotoxy(0, 0, h);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	printf("How many AI players? (1-%i) ", num_of_players);
-	num_of_AI_players = get_number_from_user(1, num_of_players);
+	printf("How many AI players? (0-%i) ", num_of_players);
+	num_of_AI_players = get_number_from_user(0, num_of_players);
 	if (num_of_AI_players == num_of_players)
 	{
 		for (int i = 0; i < 4; i++)
@@ -96,7 +86,7 @@ void ask_for_AI_players(_player *players, HANDLE h, int num_of_players)
 			players[i].AI = 1;
 		}
 	}
-	else
+	else if(num_of_AI_players!=0)
 	{
 		int AI_players;
 		printf("Which? 1-%i\n", num_of_players);

@@ -5,12 +5,8 @@ void pop_front(_pawn **head)
 	_pawn * temp = (*head);
 	if (*head != NULL)
 	{
-		/*temp = (*head)->next;
-		free(*head);
-		*head = temp;*/
 		(*head) = (*head)->next;
 		temp = NULL;
-
 	}
 }
 
@@ -69,4 +65,5 @@ int position_in_list(_pawn **head, _pawn *pawn)
 		i++;
 		temp = temp->next;
 	}
+	return 0;
 }
