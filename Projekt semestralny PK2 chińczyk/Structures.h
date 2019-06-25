@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifndef _STRUCTURES_H
+#define _STRUCTURES_H
+
 typedef struct {
 	char *name;	//nazwa gracza: green, yellow, blue, red
 	int id;		//id gracza 0-3;
@@ -40,3 +43,5 @@ typedef struct {
 	_field bases[4][4];
 	//_field meta[4][4];	//testowo przerzucam do road[56]
 }_board;
+
+#endif

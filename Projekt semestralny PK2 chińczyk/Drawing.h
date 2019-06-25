@@ -1,6 +1,9 @@
 #pragma once
 #include "Structures.h"
 
+#ifndef _DRAWING_H
+#define _DRAWING_H
+
 void draw_board(_board*, HANDLE);
 
 void draw_pawns(_field, HANDLE);
@@ -14,3 +17,5 @@ void draw_raod(_field*, HANDLE);
 void draw_exits(_field*, HANDLE);
 
 void draw_the_center(HANDLE);
+
+#endif

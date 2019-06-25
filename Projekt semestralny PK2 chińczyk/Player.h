@@ -1,6 +1,9 @@
 #pragma once
 #include "Structures.h"
 
+#ifndef _PLAYER_H
+#define _PLAYER_H
+
 void init_players(_player*,int);
 
 int endgame(_player*, int*,int);
@@ -16,3 +19,5 @@ int ask_for_load(HANDLE);
 void ask_for_AI_players(_player*, HANDLE,int);
 
 int ask_for_auto_dice(HANDLE);
+
+#endif

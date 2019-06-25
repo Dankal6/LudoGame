@@ -131,7 +131,6 @@ int main()
 	init_game(&board,&pawns,&players,h);
 	autodice = ask_for_auto_dice(h);
 	draw_board(board, h);
-	
 
 	while (play && esc !=27)		//glowna petla gry
 	{
