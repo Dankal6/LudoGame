@@ -1,2 +1,2 @@
-# Projekt-PK2
-Projekt semestralny z PK2
+# Ludo game
+Ludo game written in C as a project for studies.
